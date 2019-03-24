@@ -6,7 +6,7 @@ local LAM2 = LibStub:GetLibrary("LibAddonMenu-2.0")
 PacsAddon = {}
 
 PacsAddon.name = "PacGuildTools"
-PacsAddon.version = 1
+PacsAddon.version = "1.0.0"
 
 -- Initialize our Variables
 function PacsAddon:Initialize()
