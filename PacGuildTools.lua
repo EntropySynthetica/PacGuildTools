@@ -14,7 +14,7 @@ function PacsAddon:Initialize()
 
     PacsAddon.savedVariables = ZO_SavedVars:NewAccountWide("PacGuildToolsSavedVariables", 1, nil, {})
 
-
+    enableDebug = PacsAddon.savedVariables.enableDebug
     activeGuild = PacsAddon.savedVariables.activeGuild
     for guildIndex = 1, 5 do
         if activeGuild == GetGuildName(guildIndex) then
@@ -55,9 +55,12 @@ function PacsAddon:Initialize()
 
     
     PacsAddon.savedVariables.guildRoster = masterList
-    d("PacGuildTools Initialize")
-    d("Active Guild " .. activeGuild)
-    d("Active Guild ID " .. activeGuildID)
+
+    if enableDebug == true then
+        d("PacGuildTools Initialized")
+        d("Active Guild " .. activeGuild)
+        d("Active Guild ID " .. activeGuildID)
+    end
 end
 
 
@@ -182,6 +185,19 @@ function PacsAddon.CreateSettingsWindow()
             default = true,
             getFunc = function() return PacsAddon.savedVariables.mustBeOnline end,
             setFunc = function(newValue) PacsAddon.savedVariables.mustBeOnline = newValue end,
+        },
+
+        [5] = {
+            type = "header",
+            name = "Debug Messages",
+        },
+
+        [6] = {
+            type = "checkbox",
+            name = "Enable Debug Messages",
+            default = false,
+            getFunc = function() return PacsAddon.savedVariables.enableDebug end,
+            setFunc = function(newValue) PacsAddon.savedVariables.enableDebug = newValue end,
         }
     }
 
