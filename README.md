@@ -1,5 +1,5 @@
 # Pacrooti's Guild Tools
-ESO Addon for Guild Roster Managment by Erica Zavaleta, @LadyWinry
+ESO Addon for Guild Roster Management by Erica Zavaleta, @LadyWinry
 
 # How to Install
 * The most recent build can be downloaded from this link,  https://github.com/EntropySynthetica/PacGuildTools/archive/master.zip
@@ -20,8 +20,9 @@ ESO Addon for Guild Roster Managment by Erica Zavaleta, @LadyWinry
 
 # How to run a raffle
 * use /pgt to open the Addons settings page.  
-* Select which guild to run the raffle on.  (This setting also determiens which guild roster is exported to the lua file.)
+* Select which guild to run the raffle on.  (This setting also determines which guild roster is exported to the lua file.)
 * Select if you must be online to win
 * Select Resume from the settings menus
-* use /pgt_raffle to run a raffle.  The winner will be displayed in your chat.  
+* use /pgt_raffle to run a raffle.  The winner will be displayed in your chat.
+
 
