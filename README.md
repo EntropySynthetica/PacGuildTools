@@ -26,3 +26,9 @@ ESO Addon for Guild Roster Management by Erica Zavaleta, @LadyWinry
 * use /pgt_raffle to run a raffle.  The winner will be displayed in your chat.
 
 
+# Valid Slash Commands
+* /pgt               Opens the Pacrooti's Guild Tools Menu
+* /pgt_raffle        Runs a raffle
+* /summon_pacrooti   Summons Pacrooti to your position!
+* /dismiss_pacrooti  Sends Pacrooti Away
+
