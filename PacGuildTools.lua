@@ -1,8 +1,8 @@
--------------------------------------------------------------------------------------------------
---  Libraries --
--------------------------------------------------------------------------------------------------
+
+-- Required Libraries
 local LAM2 = LibStub:GetLibrary("LibAddonMenu-2.0")
 
+-- Initialize our Namespace Table
 PacsAddon = {}
 
 PacsAddon.name = "PacGuildTools"
@@ -138,6 +138,16 @@ function pgt_raffle(extra)
     end
 end
 
+-- Summon Pacrooti!!!
+function summon_pacrooti(extra)
+    SetCrownCrateNPCVisible(true)
+end
+
+-- Dismiss Pacrooti
+function dismiss_pacrooti(extra)
+    SetCrownCrateNPCVisible(false)
+end
+
 -- Convert Seconds to Hours, Min, Seconds
 function SecondsToClock(seconds)
     local seconds = tonumber(seconds)
@@ -228,5 +238,7 @@ end
 
 -- Register our slash commands
 SLASH_COMMANDS["/pgt_raffle"] = pgt_raffle
+SLASH_COMMANDS["/summon_pacrooti"] = summon_pacrooti
+SLASH_COMMANDS["/dismiss_pacrooti"] = dismiss_pacrooti
 
 EVENT_MANAGER:RegisterForEvent(PacsAddon.name, EVENT_ADD_ON_LOADED, PacsAddon.OnAddOnLoaded)
