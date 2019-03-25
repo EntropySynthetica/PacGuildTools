@@ -27,8 +27,15 @@ ESO Addon for Guild Roster Management by Erica Zavaleta, @LadyWinry
 
 
 # Valid Slash Commands
-* /pgt               Opens the Pacrooti's Guild Tools Menu
-* /pgt_raffle        Runs a raffle
-* /summon_pacrooti   Summons Pacrooti to your position!
-* /dismiss_pacrooti  Sends Pacrooti Away
+Opens the Pacrooti's Guild Tools Menu
+* /pgt
+
+Runs a raffle               
+* /pgt_raffle 
+
+Summons Pacrooti to your position!       
+* /summon_pacrooti  
+
+Sends Pacrooti Away
+* /dismiss_pacrooti  
 
