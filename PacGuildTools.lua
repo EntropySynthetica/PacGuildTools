@@ -16,6 +16,12 @@ function PacsAddon:Initialize()
 
     enableDebug = PacsAddon.savedVariables.enableDebug
     activeGuild = PacsAddon.savedVariables.activeGuild
+
+    if isempty(activeGuild) then
+        activeGuild = GetGuildName(1)
+        PacsAddon.savedVariables.activeGuild = activeGuild
+    end
+
     for guildIndex = 1, 5 do
         if activeGuild == GetGuildName(guildIndex) then
             activeGuildID = guildIndex
@@ -53,7 +59,6 @@ function PacsAddon:Initialize()
 
     end
 
-    
     PacsAddon.savedVariables.guildRoster = masterList
 
     if enableDebug == true then
@@ -133,6 +138,10 @@ function SecondsToClock(seconds)
       secs = string.format("%02.f", math.floor(seconds - hours*3600 - mins *60));
       return hours..":"..mins..":"..secs
     end
+end
+
+function isempty(s)
+    return s == nil or s == ''
 end
 
 -------------------------------------------------------------------------------------------------
