@@ -17,20 +17,24 @@ function PacsAddon:Initialize()
     enableDebug = PacsAddon.savedVariables.enableDebug
     activeGuild = PacsAddon.savedVariables.activeGuild
 
+    -- If this is the first run, or the saved settings file is missing lets set the first guild as the default
     if isempty(activeGuild) then
         activeGuild = GetGuildName(1)
         PacsAddon.savedVariables.activeGuild = activeGuild
     end
 
+    -- Currently the Saved Settings saves the Guilds Name.  Lets grab the active guilds index ID.  
     for guildIndex = 1, 5 do
         if activeGuild == GetGuildName(guildIndex) then
             activeGuildID = guildIndex
         end
     end
 
+    -- Grab the active guilds name and number of members from the ESO API
     guildName = GetGuildName(activeGuildID)
     guildMemberNum = GetNumGuildMembers(activeGuildID)
 
+    -- Grab the guild roster from the ESO API
     masterList = {}
     for guildMemberIndex = 1, guildMemberNum do
         local displayName, note, rankIndex, status, secsSinceLogoff = GetGuildMemberInfo(activeGuildID, guildMemberIndex)
@@ -59,8 +63,11 @@ function PacsAddon:Initialize()
 
     end
 
+    -- Save the Guild Roster to the saved settings file so we can convert it to CSV outside of ESO.  The saved settings file is only 
+    -- written to when logging out, or doing a /reloadui
     PacsAddon.savedVariables.guildRoster = masterList
 
+    -- Debug output if we have that enabled. 
     if enableDebug == true then
         d("PacGuildTools Initialized")
         d("Active Guild " .. activeGuild)
@@ -80,6 +87,7 @@ end
 -- This function runs when typing /pgt_raffle
 function pgt_raffle(extra)
 
+    -- Figure out which guild is the active one, and if the winner must be online. 
     local mustBeOnline = PacsAddon.savedVariables.mustBeOnline
     local activeGuild = PacsAddon.savedVariables.activeGuild
     local guildMemberNum = GetNumGuildMembers(activeGuildID)
@@ -90,6 +98,7 @@ function pgt_raffle(extra)
         end
     end
     
+    -- If the member must be online we run the raffle and check their status.  We keep re-running the raffle until we get an online winner. 
     if mustBeOnline == true then
         repeat
             local rafflewinner = math.random(1, guildMemberNum)
@@ -105,11 +114,13 @@ function pgt_raffle(extra)
                 statusString = "Offline"
             end
 
+            -- Todo, enable the following to print when debug is on.  
             -- d("Debug Winner is " .. winnerName .. " and is " .. statusString .. " " .. status)
         until(status ~= 4)
 
         d("Winner is " .. winnerName)
 
+    -- If member must be online is false we will just pick and display the first winner, along with their online status. 
     else
         local rafflewinner = math.random(1, guildMemberNum)
         local displayName, note, rankIndex, status, secsSinceLogoff = GetGuildMemberInfo(activeGuildID, rafflewinner)
@@ -127,6 +138,7 @@ function pgt_raffle(extra)
     end
 end
 
+-- Convert Seconds to Hours, Min, Seconds
 function SecondsToClock(seconds)
     local seconds = tonumber(seconds)
   
@@ -140,13 +152,13 @@ function SecondsToClock(seconds)
     end
 end
 
+-- Check if a Variable is empty
 function isempty(s)
     return s == nil or s == ''
 end
 
--------------------------------------------------------------------------------------------------
---  Menu Functions --
--------------------------------------------------------------------------------------------------
+
+--  Settings Menu Function via LibAddonMenu-2.0
 function PacsAddon.CreateSettingsWindow()
     local panelData = {
         type = "panel",
@@ -214,7 +226,7 @@ function PacsAddon.CreateSettingsWindow()
  
 end
 
-
+-- Register our slash commands
 SLASH_COMMANDS["/pgt_raffle"] = pgt_raffle
 
 EVENT_MANAGER:RegisterForEvent(PacsAddon.name, EVENT_ADD_ON_LOADED, PacsAddon.OnAddOnLoaded)
