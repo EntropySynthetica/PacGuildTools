@@ -103,7 +103,7 @@ function pgt_raffle(extra)
             -- d("Debug Winner is " .. winnerName .. " and is " .. statusString .. " " .. status)
         until(status ~= 4)
 
-        d("Winner is " .. winnerName .. " and is " .. statusString)
+        d("Winner is " .. winnerName)
 
     else
         local rafflewinner = math.random(1, guildMemberNum)
