@@ -4,7 +4,7 @@ ESO Addon for Guild Roster Management by Erica Zavaleta, @LadyWinry
 # How to Install
 * The most recent build can be downloaded from this link,  https://github.com/EntropySynthetica/PacGuildTools/archive/master.zip
 * Open the zip and copy the folder to Documents/Elder Scrolls Online/live/AddOns
-* (Optional) Rename the directory from PacGuildTools-Master to PacGuildTools 
+* Rename the directory from PacGuildTools-Master to PacGuildTools 
 
 # Current Features
 * Export Current Guild Roster to Documents/Elder Scrolls Online/live/SavedVariables/PacGuildTools.lua
