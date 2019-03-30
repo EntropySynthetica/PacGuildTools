@@ -12,6 +12,8 @@ PacsAddon.version = "1.0.0"
 function PacsAddon:Initialize()
     PacsAddon.CreateSettingsWindow()
 
+    time = os.date("%m/%d/%Y %H:%M:%S")
+
     PacsAddon.savedVariables = ZO_SavedVars:NewAccountWide("PacGuildToolsSavedVariables", 1, nil, {})
 
     enableDebug = PacsAddon.savedVariables.enableDebug
@@ -63,15 +65,51 @@ function PacsAddon:Initialize()
 
     end
 
+    local numGuildBankEvents = GetNumGuildEvents(activeGuildID, GUILD_HISTORY_BANK)
+    guildBankHistory = {}
+    for GuildBankEventsIndex = 1, numGuildBankEvents do
+        local eventType, secsSinceEvent, displayName, count, itemLink = GetGuildEventInfo(activeGuildID, GUILD_HISTORY_BANK, GuildBankEventsIndex)
+
+        if eventType == 21 then
+            eventName = "Bankgold Added"
+        elseif eventType == 22 then
+            eventName = "Bankgold Removed"
+        elseif eventType == 14 then
+            eventName = "Bankitem Removed"
+        elseif eventType == 13 then
+            eventName = "Bankitem Added"
+        else
+            eventName = "Unknown"
+        end
+
+        local data = {
+                    eventName = eventName,
+                    eventType = eventType,
+                    secsSinceEvent = secsSinceEvent,
+                    timestamp = os.date("%m/%d/%Y %H:%M:%S %z", (os.time() - secsSinceEvent)),
+                    displayName = displayName,
+                    count = count,
+                    itemLink = itemLink,
+                    item = GetItemLinkName(itemLink)
+                }
+        guildBankHistory[GuildBankEventsIndex] = data
+    end
+
+
     -- Save the Guild Roster to the saved settings file so we can convert it to CSV outside of ESO.  The saved settings file is only 
     -- written to when logging out, or doing a /reloadui
     PacsAddon.savedVariables.guildRoster = masterList
+    PacsAddon.savedVariables.guildDepositList = guildBankHistory
+    PacsAddon.savedVariables.lastUpdate = time
+
 
     -- Debug output if we have that enabled. 
     if enableDebug == true then
         d("PacGuildTools Initialized")
         d("Active Guild " .. activeGuild)
         d("Active Guild ID " .. activeGuildID)
+        d(time)
+        d(numGuildBankEvents)
     end
 end
 
