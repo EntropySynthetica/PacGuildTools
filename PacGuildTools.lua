@@ -1,6 +1,7 @@
 
 -- Required Libraries
 local LAM2 = LibStub:GetLibrary("LibAddonMenu-2.0")
+local LIBMW = LibStub:GetLibrary("LibMsgWin-1.0")
 
 -- Initialize our Namespace Table
 PacsAddon = {}
@@ -102,6 +103,7 @@ function PacsAddon:Initialize()
     PacsAddon.savedVariables.guildDepositList = guildBankHistory
     PacsAddon.savedVariables.lastUpdate = time
 
+    -- local myMsgWindow = LIBMW:CreateMsgWindow("UberAddonChatWindow", "Window Header Label", 0, 0)
 
     -- Debug output if we have that enabled. 
     if enableDebug == true then
@@ -205,6 +207,10 @@ function isempty(s)
     return s == nil or s == ''
 end
 
+
+-- function PacsAddonUpdate()
+--     PacAddonIndicatorCount:SetText("Test Text \n test text 2")
+-- end
 
 --  Settings Menu Function via LibAddonMenu-2.0
 function PacsAddon.CreateSettingsWindow()
