@@ -7,7 +7,7 @@ local LAM2 = LibStub:GetLibrary("LibAddonMenu-2.0")
 PacsAddon = {}
 
 PacsAddon.name = "PacGuildTools"
-PacsAddon.version = "1.0.0"
+PacsAddon.version = "1.1.0"
 
 -- Initialize our Variables
 function PacsAddon:Initialize()
@@ -41,6 +41,9 @@ function PacsAddon:Initialize()
     UpdateGuildRoster()
     UpdateGuildHistory()
 
+    -- Poll the Server every 2.5 seconds to get Guild Bank History filled. 
+    EVENT_MANAGER:RegisterForUpdate("UpdateGuildHistory", 2500, LoadGuildHistoryBackfill)
+
     PacsAddon.savedVariables.lastUpdate = time
 
     --local myMsgWindow = LIBMW:CreateMsgWindow("PacGuildTools", "Pacrooti's Guild Tools", 0, 0)
@@ -70,14 +73,8 @@ function pgt_raffle(extra)
 
     -- Figure out which guild is the active one, and if the winner must be online. 
     local mustBeOnline = PacsAddon.savedVariables.mustBeOnline
-    local activeGuild = PacsAddon.savedVariables.activeGuild
+    local activeGUildID = PacsAddon.savedVariables.activeGuildID
     local guildMemberNum = GetNumGuildMembers(activeGuildID)
-
-    for guildIndex = 1, 5 do
-        if activeGuild == GetGuildName(guildIndex) then
-            activeGuildID = guildIndex
-        end
-    end
     
     -- If the member must be online we run the raffle and check their status.  We keep re-running the raffle until we get an online winner. 
     if mustBeOnline == true then
@@ -153,7 +150,7 @@ function isempty(s)
 end
 
 
--- Update Guild Roster
+-- Update Guild Roster in Saved Variables
 function UpdateGuildRoster(extra)
     local activeGUildID = PacsAddon.savedVariables.activeGuildID
     local enableDebug = PacsAddon.savedVariables.enableDebug
@@ -197,11 +194,12 @@ function UpdateGuildRoster(extra)
 end
 
 
--- Update Guild Bank History
-function UpdateGuildHistory(extra)
-    local activeGUildID = PacsAddon.savedVariables.activeGuildID
+-- Update Guild Bank History in Saved Variables
+function UpdateGuildHistory()
+    local activeGuildID = PacsAddon.savedVariables.activeGuildID
     local enableDebug = PacsAddon.savedVariables.enableDebug
 
+    RequestGuildHistoryCategoryOlder(activeGuildID, GUILD_HISTORY_BANK)
     local numGuildBankEvents = GetNumGuildEvents(activeGuildID, GUILD_HISTORY_BANK)
     local guildBankHistory = {}
     for GuildBankEventsIndex = 1, numGuildBankEvents do
@@ -237,6 +235,38 @@ function UpdateGuildHistory(extra)
     if enableDebug == true then
         d("Updated Saved Var Guild history with " .. numGuildBankEvents .. " events.")
     end
+end
+
+-- Function to poll the server for Guild Bank History 100ish items at a time. 
+function LoadGuildHistoryBackfill()
+    local activeGuildID = PacsAddon.savedVariables.activeGuildID
+    local enableDebug = PacsAddon.savedVariables.enableDebug
+
+    RequestGuildHistoryCategoryOlder(activeGuildID, GUILD_HISTORY_BANK)
+    local moreEvents = (DoesGuildHistoryCategoryHaveMoreEvents(activeGuildID, GUILD_HISTORY_BANK))
+
+    if moreEvents then
+        moreEventsString = "Yes"
+    else 
+        moreEventsString = "No"
+    end
+
+    if enableDebug == true then
+        d("Are there more guild bank history events to load? " .. moreEventsString)
+        d("So far we have loaded " .. GetNumGuildEvents(activeGuildID, GUILD_HISTORY_BANK) .. " events")
+    end
+
+    -- If there are no more events to load lets stop checking every 2.5 seconds, and update our saved variables.
+    if moreEvents == false then
+        EVENT_MANAGER:UnregisterForUpdate("UpdateGuildHistory")
+        UpdateGuildHistory()
+    end
+end
+
+function sleep(n)  -- seconds
+    local clock = os.clock
+    local t0 = clock()
+    while clock() - t0 <= n do end
 end
 
 
