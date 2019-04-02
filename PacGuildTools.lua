@@ -21,6 +21,9 @@ function PacsAddon:Initialize()
     activeGuild = PacsAddon.savedVariables.activeGuild
     activeGuildID = PacsAddon.savedVariables.activeGuildID
 
+    PacsAddon.raffleParticipants = {}
+    PacsAddon.raffleMagicWord = "EnterRaffle"
+
     -- If this is the first run, or the saved settings file is missing lets set the first guild as the default
     if isempty(activeGuild) then
         activeGuild = GetGuildName(1)
@@ -43,6 +46,10 @@ function PacsAddon:Initialize()
 
     -- Poll the Server every 2.5 seconds to get Guild Bank History filled. 
     EVENT_MANAGER:RegisterForUpdate("UpdateGuildHistory", 2500, LoadGuildHistoryBackfill)
+
+
+    --ZO_ChatSystem_AddEventHandler(EVENT_CHAT_MESSAGE_CHANNEL, ChatMessageChannel)
+    ZO_PreHook(ZO_ChatSystem_GetEventHandlers(), EVENT_CHAT_MESSAGE_CHANNEL, ChatMessageChannel)
 
     PacsAddon.savedVariables.lastUpdate = time
 
@@ -263,10 +270,56 @@ function LoadGuildHistoryBackfill()
     end
 end
 
-function sleep(n)  -- seconds
-    local clock = os.clock
-    local t0 = clock()
-    while clock() - t0 <= n do end
+
+-- Run this when we get a chat message in. 
+function ChatMessageChannel(messageType, fromName, text, isCustomerService, fromDisplayName)
+    local magicWord = PacsAddon.raffleMagicWord
+
+    if string.match(text, magicWord) then
+        if tablesearch(fromDisplayName, PacsAddon.raffleParticipants) then
+            d(fromDisplayName .. " has already entered")
+        else
+            table.insert(PacsAddon.raffleParticipants, fromDisplayName)
+            d(fromDisplayName .. " has been entered!")
+        end
+
+    end
+end
+
+
+-- Show who is on the Raffle Roster
+function pgt_raffle_show()
+    d("The Following Have Entered the Raffle.")
+    for index,value in pairs(PacsAddon.raffleParticipants) do
+        d(value)
+    end
+end
+
+
+-- Clear raffle roster
+function pgt_raffle_clear()
+    PacsAddon.raffleParticipants = {}
+    d("Raffle Roster has been cleared.")
+end
+
+-- Run Raffle From Roster
+function pgt_raffle_roster()
+    local winnerName = PacsAddon.raffleParticipants[math.random(#PacsAddon.raffleParticipants)]
+    d("Winner is " .. winnerName)
+end
+
+
+-- Search Table if string exist in it
+function tablesearch(data, array)
+    local valid = {}
+    for i = 1, #array do
+        valid[array[i]] = true
+    end
+    if valid[data] then
+        return true
+    else
+        return false
+    end
 end
 
 
@@ -345,6 +398,9 @@ end
 
 -- Register our slash commands
 SLASH_COMMANDS["/pgt_raffle"] = pgt_raffle
+SLASH_COMMANDS["/pgt_raffle_roster"] = pgt_raffle_roster
+SLASH_COMMANDS["/pgt_raffle_show"] = pgt_raffle_show
+SLASH_COMMANDS["/pgt_raffle_clear"] = pgt_raffle_clear
 SLASH_COMMANDS["/summon_pacrooti"] = summon_pacrooti
 SLASH_COMMANDS["/dismiss_pacrooti"] = dismiss_pacrooti
 
