@@ -273,8 +273,8 @@ end
 
 
 function pgt_raffle_guild()
-    local activeGUildID = PacsAddon.savedVariables.activeGuildID
-    local guildMemberNum = GetNumGuildMembers(activeGuildID)
+    activeGUildID = PacsAddon.savedVariables.activeGuildID
+    guildMemberNum = GetNumGuildMembers(activeGuildID)
     local rafflewinner = math.random(1, guildMemberNum)
         local displayName, note, rankIndex, status, secsSinceLogoff = GetGuildMemberInfo(activeGuildID, rafflewinner)
         winnerName = displayName
@@ -292,8 +292,8 @@ end
 
 
 function pgt_raffle_online()
-    local activeGUildID = PacsAddon.savedVariables.activeGuildID
-    local guildMemberNum = GetNumGuildMembers(activeGuildID)
+    activeGUildID = PacsAddon.savedVariables.activeGuildID
+    guildMemberNum = GetNumGuildMembers(activeGuildID)
     repeat
         local rafflewinner = math.random(1, guildMemberNum)
         local displayName, note, rankIndex, status, secsSinceLogoff = GetGuildMemberInfo(activeGuildID, rafflewinner)
