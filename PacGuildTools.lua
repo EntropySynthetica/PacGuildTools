@@ -22,7 +22,11 @@ function PacsAddon:Initialize()
     activeGuildID = PacsAddon.savedVariables.activeGuildID
 
     PacsAddon.raffleParticipants = {}
-    PacsAddon.raffleMagicWord = "EnterRaffle"
+
+    -- Set default magic word for Raffles.
+    if isempty(PacsAddon.savedVariables.raffleMagicWord) then
+        PacsAddon.savedVariables.raffleMagicWord = "EnterRaffle"
+    end
 
     -- If this is the first run, or the saved settings file is missing lets set the first guild as the default
     if isempty(activeGuild) then
@@ -42,10 +46,13 @@ function PacsAddon:Initialize()
     guildMemberNum = GetNumGuildMembers(activeGuildID)
 
     UpdateGuildRoster()
-    UpdateGuildHistory()
 
-    -- Poll the Server every 2.5 seconds to get Guild Bank History filled. 
-    EVENT_MANAGER:RegisterForUpdate("UpdateGuildHistory", 2500, LoadGuildHistoryBackfill)
+    if PacsAddon.savedVariables.enableBankExport == true then
+        UpdateGuildHistory()
+
+        -- Poll the Server every 2.5 seconds to get Guild Bank History filled. 
+        EVENT_MANAGER:RegisterForUpdate("UpdateGuildHistory", 2500, LoadGuildHistoryBackfill)
+    end
 
 
     --ZO_ChatSystem_AddEventHandler(EVENT_CHAT_MESSAGE_CHANNEL, ChatMessageChannel)
@@ -71,55 +78,6 @@ function PacsAddon.OnAddOnLoaded(event, addonName)
     -- The event fires each time *any* addon loads - but we only care about when our own addon loads.
     if addonName == PacsAddon.name then
         PacsAddon:Initialize()
-    end
-end
-
-
--- This function runs when typing /pgt_raffle
-function pgt_raffle(extra)
-
-    -- Figure out which guild is the active one, and if the winner must be online. 
-    local mustBeOnline = PacsAddon.savedVariables.mustBeOnline
-    local activeGUildID = PacsAddon.savedVariables.activeGuildID
-    local guildMemberNum = GetNumGuildMembers(activeGuildID)
-    
-    -- If the member must be online we run the raffle and check their status.  We keep re-running the raffle until we get an online winner. 
-    if mustBeOnline == true then
-        repeat
-            local rafflewinner = math.random(1, guildMemberNum)
-            local displayName, note, rankIndex, status, secsSinceLogoff = GetGuildMemberInfo(activeGuildID, rafflewinner)
-            winnerName = displayName
-            if status == 1 then
-                statusString = "Online"
-            elseif status == 2 then
-                statusString = "Away"
-            elseif status == 3 then
-                statusString = "Do Not Distrub"
-            elseif status == 4 then
-                statusString = "Offline"
-            end
-
-            -- Todo, enable the following to print when debug is on.  
-            -- d("Debug Winner is " .. winnerName .. " and is " .. statusString .. " " .. status)
-        until(status ~= 4)
-
-        d("Winner is " .. winnerName)
-
-    -- If member must be online is false we will just pick and display the first winner, along with their online status. 
-    else
-        local rafflewinner = math.random(1, guildMemberNum)
-        local displayName, note, rankIndex, status, secsSinceLogoff = GetGuildMemberInfo(activeGuildID, rafflewinner)
-        winnerName = displayName
-        if status == 1 then
-            statusString = "Online"
-        elseif status == 2 then
-            statusString = "Away"
-        elseif status == 3 then
-            statusString = "Do Not Distrub"
-        elseif status == 4 then
-            statusString = "Offline"
-        end
-        d("Winner is " .. winnerName .. " and is " .. statusString)
     end
 end
 
@@ -271,9 +229,9 @@ function LoadGuildHistoryBackfill()
 end
 
 
--- Run this when we get a chat message in. 
+-- Check chat for magic word and enter those folks in the raffle. 
 function ChatMessageChannel(messageType, fromName, text, isCustomerService, fromDisplayName)
-    local magicWord = PacsAddon.raffleMagicWord
+    local magicWord = PacsAddon.savedVariables.raffleMagicWord
 
     if string.match(text, magicWord) then
         if tablesearch(fromDisplayName, PacsAddon.raffleParticipants) then
@@ -302,9 +260,58 @@ function pgt_raffle_clear()
     d("Raffle Roster has been cleared.")
 end
 
+
 -- Run Raffle From Roster
-function pgt_raffle_roster()
-    local winnerName = PacsAddon.raffleParticipants[math.random(#PacsAddon.raffleParticipants)]
+function pgt_raffle()
+    if next(PacsAddon.raffleParticipants) == nil then
+        d("Nobody has entered the raffle.")
+    else
+        local winnerName = PacsAddon.raffleParticipants[math.random(#PacsAddon.raffleParticipants)]
+        d("Winner is " .. winnerName)
+    end
+end
+
+
+function pgt_raffle_guild()
+    local activeGUildID = PacsAddon.savedVariables.activeGuildID
+    local guildMemberNum = GetNumGuildMembers(activeGuildID)
+    local rafflewinner = math.random(1, guildMemberNum)
+        local displayName, note, rankIndex, status, secsSinceLogoff = GetGuildMemberInfo(activeGuildID, rafflewinner)
+        winnerName = displayName
+        if status == 1 then
+            statusString = "Online"
+        elseif status == 2 then
+            statusString = "Away"
+        elseif status == 3 then
+            statusString = "Do Not Distrub"
+        elseif status == 4 then
+            statusString = "Offline"
+        end
+    d("Winner is " .. winnerName .. " and is " .. statusString)
+end
+
+
+function pgt_raffle_online()
+    local activeGUildID = PacsAddon.savedVariables.activeGuildID
+    local guildMemberNum = GetNumGuildMembers(activeGuildID)
+    repeat
+        local rafflewinner = math.random(1, guildMemberNum)
+        local displayName, note, rankIndex, status, secsSinceLogoff = GetGuildMemberInfo(activeGuildID, rafflewinner)
+        winnerName = displayName
+        if status == 1 then
+            statusString = "Online"
+        elseif status == 2 then
+            statusString = "Away"
+        elseif status == 3 then
+            statusString = "Do Not Distrub"
+        elseif status == 4 then
+            statusString = "Offline"
+        end
+
+        -- Todo, enable the following to print when debug is on.  
+        -- d("Debug Winner is " .. winnerName .. " and is " .. statusString .. " " .. status)
+    until(status ~= 4)
+
     d("Winner is " .. winnerName)
 end
 
@@ -359,7 +366,7 @@ function PacsAddon.CreateSettingsWindow()
         [2] = {
             type = "dropdown",
             name = "Select active guild",
-            tooltip = "Dropdown's tooltip text.",
+            tooltip = "The selected guild will be used for Raffle and Bank History Export features.",
             choices = guildNames,
             getFunc = function() return PacsAddon.savedVariables.activeGuild end,
             setFunc = function(newValue) PacsAddon.savedVariables.activeGuild = newValue end,
@@ -371,19 +378,55 @@ function PacsAddon.CreateSettingsWindow()
         },
 
         [4] = {
-            type = "checkbox",
-            name = "Must be Online to Win",
-            default = true,
-            getFunc = function() return PacsAddon.savedVariables.mustBeOnline end,
-            setFunc = function(newValue) PacsAddon.savedVariables.mustBeOnline = newValue end,
+            type = "description",
+            text = [[
+This addon allows you to run raffles, randomly picking a winner.  There are three raffle modes currently supported.
+
+* Participants can sign up to a raffle roster via a magic word.  They simply need to type that word in chat to enter.
+* A raffle can be run for all members in a guild.
+* A raffle can be run for all online members in a guild. 
+
+Raffle Commands:
+/pgt_raffle_online   - Run a raffle with those online in the guild.
+/pgt_raffle_guild    - Run a raffle with everyone in the guild.
+/pgt_raffle          - Run a raffle with those on the roster.
+                
+/pgt_raffle_show   Show the raffle roster.
+/pgt_rafflw_clear   Clear the Raffle Roster.
+
+* A blank magic word will enter everyone who types in chat.  
+            ]],
+            width = "full",	--or "half" (optional),
         },
 
         [5] = {
+            type = "editbox",
+            name = "Magic Word to get on Raffle Roster",
+            default = true,
+            getFunc = function() return PacsAddon.savedVariables.raffleMagicWord end,
+            setFunc = function(newValue) PacsAddon.savedVariables.raffleMagicWord = newValue end,
+        },
+
+        [6] = {
+            type = "header",
+            name = "Guild Bank History",
+        },
+
+        [7] = {
+            type = "checkbox",
+            name = "Enable Export of Guild History",
+            tooltip = "Save an Export of Guild Bank History to Saved Settings for use outside of ESO.",
+            default = false,
+            getFunc = function() return PacsAddon.savedVariables.enableBankExport end,
+            setFunc = function(newValue) PacsAddon.savedVariables.enableBankExport = newValue end,
+        },
+
+        [8] = {
             type = "header",
             name = "Debug Messages",
         },
 
-        [6] = {
+        [9] = {
             type = "checkbox",
             name = "Enable Debug Messages",
             default = false,
@@ -398,7 +441,8 @@ end
 
 -- Register our slash commands
 SLASH_COMMANDS["/pgt_raffle"] = pgt_raffle
-SLASH_COMMANDS["/pgt_raffle_roster"] = pgt_raffle_roster
+SLASH_COMMANDS["/pgt_raffle_online"] = pgt_raffle_online
+SLASH_COMMANDS["/pgt_raffle_guild"] = pgt_raffle_guild
 SLASH_COMMANDS["/pgt_raffle_show"] = pgt_raffle_show
 SLASH_COMMANDS["/pgt_raffle_clear"] = pgt_raffle_clear
 SLASH_COMMANDS["/summon_pacrooti"] = summon_pacrooti
