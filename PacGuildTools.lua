@@ -49,6 +49,9 @@ function PacsAddon:Initialize()
     activeGuild = PacsAddon.savedVariables.activeGuild
     activeGuildID = PacsAddon.savedVariables.activeGuildID
 
+    -- Check if Clock should be enabled or not
+    PacsAddon.clockEnabled()
+
     --Update the position of the clock
     PacsAddon:ClockRestorePosition()
 
@@ -365,6 +368,16 @@ function PacsAddon.OnClockMoveStop()
 end
 
 
+-- Check if Clock should be enabled or not
+function PacsAddon.clockEnabled()
+    if (PacsAddon.savedVariables.enableClock == true) then
+        PacsAddOnGUI:SetHidden(false)
+    else
+        PacsAddOnGUI:SetHidden(true)
+    end
+end
+
+
 -- Search Table if string exist in it
 function tablesearch(data, array)
     local valid = {}
@@ -456,10 +469,23 @@ function PacsAddon.CreateSettingsWindow()
 
         [8] = {
             type = "header",
-            name = "Debug Messages",
+            name = "Misc Settings",
         },
 
         [9] = {
+            type = "checkbox",
+            name = "Enable Clock",
+            default = false,
+            getFunc = function() return PacsAddon.savedVariables.enableClock end,
+            setFunc = function(newValue) PacsAddon.savedVariables.enableClock = newValue end,
+        },
+
+        [10] = {
+            type = "header",
+            name = "Debug Messages",
+        },
+
+        [11] = {
             type = "checkbox",
             name = "Enable Debug Messages",
             default = false,

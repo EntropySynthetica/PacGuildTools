@@ -3,7 +3,11 @@
         <TopLevelControl name="PacsAddOnGUI"  mouseEnabled="true" movable="true" clampedToScreen="true">
             <Dimensions x="160" y="42" />
             <Anchor point="CENTER" />
- 
+
+            <!-- <OnInitialized>
+                PacsAddon.clockEnabled()
+            </OnInitialized> -->
+
             <OnUpdate>
                 PacsAddon.currentTimeShort()
             </OnUpdate>
