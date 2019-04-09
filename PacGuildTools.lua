@@ -8,6 +8,34 @@ PacsAddon = {}
 
 PacsAddon.name = "PacGuildTools"
 PacsAddon.version = "1.1.0"
+PacsAddon.raffledescText = [[
+This addon allows you to run raffles, randomly picking a winner.  There are three raffle modes currently supported.
+    
+* Participants can sign up to a raffle roster via a magic word.  They simply need to type that word in chat to enter.
+* A raffle can be run for all members in a guild.
+* A raffle can be run for all online members in a guild. 
+    
+Raffle Commands:
+/pgt_raffle_online   - Run a raffle with those online in the guild.
+/pgt_raffle_guild    - Run a raffle with everyone in the guild.
+/pgt_raffle          - Run a raffle with those on the roster.
+                    
+/pgt_raffle_show   Show the raffle roster.
+/pgt_rafflw_clear   Clear the Raffle Roster.
+    
+* A blank magic word will enter everyone who types in chat.  
+]]
+
+
+-- Function to Restore Clock to last saved Position
+function PacsAddon:ClockRestorePosition()
+    local left = PacsAddon.savedVariables.clockLeft
+    local top = PacsAddon.savedVariables.clockTop
+
+    PacsAddOnGUI:ClearAnchors()
+    PacsAddOnGUI:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+end
+
 
 -- Initialize our Variables
 function PacsAddon:Initialize()
@@ -20,6 +48,10 @@ function PacsAddon:Initialize()
     enableDebug = PacsAddon.savedVariables.enableDebug
     activeGuild = PacsAddon.savedVariables.activeGuild
     activeGuildID = PacsAddon.savedVariables.activeGuildID
+
+    --Update the position of the clock
+    PacsAddon:ClockRestorePosition()
+
 
     PacsAddon.raffleParticipants = {}
 
@@ -109,7 +141,7 @@ function SecondsToClock(seconds)
 end
 
 
--- Check if a Variable is empty
+-- Function to Check if a Variable is empty
 function isempty(s)
     return s == nil or s == ''
 end
@@ -272,8 +304,9 @@ function pgt_raffle()
 end
 
 
+-- Run Raffle from all Guild Roster
 function pgt_raffle_guild()
-    activeGUildID = PacsAddon.savedVariables.activeGuildID
+    local activeGuildID = PacsAddon.savedVariables.activeGuildID
     guildMemberNum = GetNumGuildMembers(activeGuildID)
     local rafflewinner = math.random(1, guildMemberNum)
         local displayName, note, rankIndex, status, secsSinceLogoff = GetGuildMemberInfo(activeGuildID, rafflewinner)
@@ -291,8 +324,9 @@ function pgt_raffle_guild()
 end
 
 
+-- Run Raffle from online guild members
 function pgt_raffle_online()
-    activeGUildID = PacsAddon.savedVariables.activeGuildID
+    activeGuildID = PacsAddon.savedVariables.activeGuildID
     guildMemberNum = GetNumGuildMembers(activeGuildID)
     repeat
         local rafflewinner = math.random(1, guildMemberNum)
@@ -313,6 +347,21 @@ function pgt_raffle_online()
     until(status ~= 4)
 
     d("Winner is " .. winnerName)
+end
+
+
+-- Return Current Time
+function PacsAddon.currentTimeShort()
+    local time = os.date(" %I:%M:%S %p")
+    PacsAddOnGUIClock:SetText(time)
+    --d(time)
+end
+
+
+-- Save Clock Position when done moving
+function PacsAddon.OnClockMoveStop()
+    PacsAddon.savedVariables.clockLeft = PacsAddOnGUI:GetLeft()
+    PacsAddon.savedVariables.clockTop = PacsAddOnGUI:GetTop()
 end
 
 
@@ -379,23 +428,7 @@ function PacsAddon.CreateSettingsWindow()
 
         [4] = {
             type = "description",
-            text = [[
-This addon allows you to run raffles, randomly picking a winner.  There are three raffle modes currently supported.
-
-* Participants can sign up to a raffle roster via a magic word.  They simply need to type that word in chat to enter.
-* A raffle can be run for all members in a guild.
-* A raffle can be run for all online members in a guild. 
-
-Raffle Commands:
-/pgt_raffle_online   - Run a raffle with those online in the guild.
-/pgt_raffle_guild    - Run a raffle with everyone in the guild.
-/pgt_raffle          - Run a raffle with those on the roster.
-                
-/pgt_raffle_show   Show the raffle roster.
-/pgt_rafflw_clear   Clear the Raffle Roster.
-
-* A blank magic word will enter everyone who types in chat.  
-            ]],
+            text = PacsAddon.raffledescText,
             width = "full",	--or "half" (optional),
         },
 

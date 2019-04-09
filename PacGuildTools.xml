@@ -1,0 +1,23 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="PacsAddOnGUI"  mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="160" y="42" />
+            <Anchor point="CENTER" />
+ 
+            <OnUpdate>
+                PacsAddon.currentTimeShort()
+            </OnUpdate>
+
+            <OnMoveStop>
+                PacsAddon.OnClockMoveStop()
+            </OnMoveStop>
+
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" />
+                <Label name="$(parent)Clock" font="ZoFontWindowTitle" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Time: ">
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>
