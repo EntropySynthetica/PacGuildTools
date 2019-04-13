@@ -217,6 +217,12 @@ function UpdateGuildHistory()
             eventName = "Unknown"
         end
 
+        avgPrice = {}
+        avgPrice = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
+        if isempty(avgPrice) == false then
+            avgPrice = avgPrice['Avg']
+        end 
+
         local data = {
                     eventName = eventName,
                     eventType = eventType,
@@ -225,6 +231,7 @@ function UpdateGuildHistory()
                     displayName = displayName,
                     count = count,
                     itemLink = itemLink,
+                    avgPrice = avgPrice,
                     item = GetItemLinkName(itemLink)
                 }
         guildBankHistory[GuildBankEventsIndex] = data
@@ -234,6 +241,39 @@ function UpdateGuildHistory()
 
     if enableDebug == true then
         d("Updated Saved Var Guild history with " .. numGuildBankEvents .. " events.")
+    end
+end
+
+-- Update Guild Store History in Saved Variables
+function UpdateGuildStoreHistory()
+    local activeGuildID = PacsAddon.savedVariables.activeGuildID
+    local enableDebug = PacsAddon.savedVariables.enableDebug
+
+    RequestGuildHistoryCategoryOlder(activeGuildID, GUILD_HISTORY_STORE)
+    local numGuildStoreEvents = GetNumGuildEvents(activeGuildID, GUILD_HISTORY_STORE)
+    local guildStoreHistory = {}
+    for GuildStoreEventsIndex = 1, numGuildStoreEvents do
+        local eventType, secsSinceEvent, param1, param2, param3, param4, param5, param6 = GetGuildEventInfo(activeGuildID, GUILD_HISTORY_STORE, GuildStoreEventsIndex)
+
+
+        local data = {
+                    eventType = eventType,
+                    secsSinceEvent = secsSinceEvent,
+                    timestamp = os.date("%m/%d/%Y %H:%M:%S %z", (os.time() - secsSinceEvent)),
+                    sellerName = param1,
+                    buyerName = param2,
+                    quantity = param3,
+                    itemID = param4,
+                    sellPrice = param5,
+                    guildCut = param6
+                }
+        guildStoreHistory[GuildStoreEventsIndex] = data
+    end
+
+    PacsAddon.savedVariables.guildStoreList = guildStoreHistory
+
+    if enableDebug == true then
+        d("Updated Saved Var Guild Store history with " .. numGuildStoreEvents .. " events.")
     end
 end
 

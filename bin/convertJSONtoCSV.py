@@ -15,6 +15,7 @@ with open(r"SavedVarOutput.json") as json_file:
                                 "statusString",
                                 "status",
                                 "rankIndex",
+                                "rankName",
                                 "secsSinceLogoff",
                                 "logoffString"
                                     ])
@@ -25,6 +26,7 @@ with open(r"SavedVarOutput.json") as json_file:
                                     member['statusString'],
                                     member['status'],
                                     member['rankIndex'],
+                                    member['rankName'],
                                     member['secsSinceLogoff'],
                                     member['logoffString']
                                     ])
@@ -36,16 +38,22 @@ with open(r"SavedVarOutput.json") as json_file:
                                 "displayName",
                                 "item",
                                 "itemCount",
+                                "avgPrice",
                                 "eventType",
                                 "eventName"
                                 ])
 
         for item in data['Default']['@LadyWinry']['$AccountWide']['guildDepositList']:
+            if 'avgPrice' in item:
+                avgPrice = item['avgPrice']
+            else:
+                avgPrice = ""
             history_writer.writerow([
                                     item['timestamp'],
                                     item['displayName'],
                                     item['item'],
                                     item['count'],
+                                    avgPrice,
                                     item['eventType'],
                                     item['eventName']
                                     ])
