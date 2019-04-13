@@ -57,3 +57,30 @@ with open(r"SavedVarOutput.json") as json_file:
                                     item['eventType'],
                                     item['eventName']
                                     ])
+
+    with open('guild_store.csv', mode='w') as guild_store:
+        history_writer = csv.writer(guild_store, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
+        history_writer.writerow([
+                                "timestamp",
+                                "sellerName",
+                                "buyerName",
+                                "item",
+                                "itemCount",
+                                "sellPrice",
+                                "guildCut",
+                                "eventType",
+                                "eventName"
+                                ])
+
+        for item in data['Default']['@LadyWinry']['$AccountWide']['guildStoreList']:
+            history_writer.writerow([
+                                    item['timestamp'],
+                                    item['sellerName'],
+                                    item['buyerName'],
+                                    item['item'],
+                                    item['count'],
+                                    item['sellPrice'],
+                                    item['guildCut'],
+                                    item['eventType'],
+                                    item['eventName']
+                                    ])

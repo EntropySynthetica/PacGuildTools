@@ -84,9 +84,13 @@ function PacsAddon:Initialize()
 
     if PacsAddon.savedVariables.enableBankExport == true then
         UpdateGuildHistory()
+        UpdateGuildStoreHistory()
 
         -- Poll the Server every 2.5 seconds to get Guild Bank History filled. 
         EVENT_MANAGER:RegisterForUpdate("UpdateGuildHistory", 2500, LoadGuildHistoryBackfill)
+
+        -- Poll the Server every 2.5 seconds to get Guild Store History filled. 
+        EVENT_MANAGER:RegisterForUpdate("UpdateGuildStore", 2500, LoadGuildStoreBackfill)
     end
 
 
@@ -204,6 +208,7 @@ function UpdateGuildHistory()
     local guildBankHistory = {}
     for GuildBankEventsIndex = 1, numGuildBankEvents do
         local eventType, secsSinceEvent, displayName, count, itemLink = GetGuildEventInfo(activeGuildID, GUILD_HISTORY_BANK, GuildBankEventsIndex)
+        local timestamp = os.date("%m/%d/%Y %H:%M:%S %z", (os.time() - secsSinceEvent))
 
         if eventType == 21 then
             eventName = "Bankgold Added"
@@ -227,7 +232,7 @@ function UpdateGuildHistory()
                     eventName = eventName,
                     eventType = eventType,
                     secsSinceEvent = secsSinceEvent,
-                    timestamp = os.date("%m/%d/%Y %H:%M:%S %z", (os.time() - secsSinceEvent)),
+                    timestamp = timestamp,
                     displayName = displayName,
                     count = count,
                     itemLink = itemLink,
@@ -254,18 +259,28 @@ function UpdateGuildStoreHistory()
     local guildStoreHistory = {}
     for GuildStoreEventsIndex = 1, numGuildStoreEvents do
         local eventType, secsSinceEvent, param1, param2, param3, param4, param5, param6 = GetGuildEventInfo(activeGuildID, GUILD_HISTORY_STORE, GuildStoreEventsIndex)
+        local timestamp = os.date("%m/%d/%Y %H:%M:%S %z", (os.time() - secsSinceEvent))
 
+        if eventType == 15 then
+            eventName = "Item Sold"
+        elseif eventType == 41 then
+            eventName = "Item Listed"
+        else
+            eventName = "Unknown"
+        end
 
         local data = {
+                    eventName = eventName,
                     eventType = eventType,
                     secsSinceEvent = secsSinceEvent,
-                    timestamp = os.date("%m/%d/%Y %H:%M:%S %z", (os.time() - secsSinceEvent)),
+                    timestamp = timestamp,
                     sellerName = param1,
                     buyerName = param2,
-                    quantity = param3,
-                    itemID = param4,
+                    count = param3,
+                    itemLink = param4,
                     sellPrice = param5,
-                    guildCut = param6
+                    guildCut = param6,
+                    item = GetItemLinkName(param4)
                 }
         guildStoreHistory[GuildStoreEventsIndex] = data
     end
@@ -293,7 +308,7 @@ function LoadGuildHistoryBackfill()
 
     if enableDebug == true then
         d("Are there more guild bank history events to load? " .. moreEventsString)
-        d("So far we have loaded " .. GetNumGuildEvents(activeGuildID, GUILD_HISTORY_BANK) .. " events")
+        d("So far we have loaded " .. GetNumGuildEvents(activeGuildID, GUILD_HISTORY_BANK) .. " guild bank events")
     end
 
     -- If there are no more events to load lets stop checking every 2.5 seconds, and update our saved variables.
@@ -303,6 +318,32 @@ function LoadGuildHistoryBackfill()
     end
 end
 
+
+-- Function to poll the server for Guild Store History 100ish items at a time. 
+function LoadGuildStoreBackfill()
+    local activeGuildID = PacsAddon.savedVariables.activeGuildID
+    local enableDebug = PacsAddon.savedVariables.enableDebug
+
+    RequestGuildHistoryCategoryOlder(activeGuildID, GUILD_HISTORY_STORE)
+    local moreEvents = (DoesGuildHistoryCategoryHaveMoreEvents(activeGuildID, GUILD_HISTORY_STORE))
+
+    if moreEvents then
+        moreEventsString = "Yes"
+    else 
+        moreEventsString = "No"
+    end
+
+    if enableDebug == true then
+        d("Are there more guild store history events to load? " .. moreEventsString)
+        d("So far we have loaded " .. GetNumGuildEvents(activeGuildID, GUILD_HISTORY_STORE) .. " guild store events")
+    end
+
+    -- If there are no more events to load lets stop checking every 2.5 seconds, and update our saved variables.
+    if moreEvents == false then
+        EVENT_MANAGER:UnregisterForUpdate("UpdateGuildStore")
+        UpdateGuildStoreHistory()
+    end
+end
 
 -- Check chat for magic word and enter those folks in the raffle. 
 function ChatMessageChannel(messageType, fromName, text, isCustomerService, fromDisplayName)

@@ -9,3 +9,4 @@ rm SavedVarOutput.json
 
 mv guild_history.csv logs/history/guild_history-$d.csv
 mv guild_roster.csv logs/roster/guild_roster-$d.csv
+mv guild_store.csv logs/store/guild_store-$d.csv
