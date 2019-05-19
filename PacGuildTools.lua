@@ -265,6 +265,8 @@ function UpdateGuildStoreHistory()
             eventName = "Item Sold"
         elseif eventType == 41 then
             eventName = "Item Listed"
+        elseif eventType == 24 then
+            eventName = "Guild Trader Bid"
         else
             eventName = "Unknown"
         end
