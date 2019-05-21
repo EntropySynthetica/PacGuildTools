@@ -7,7 +7,7 @@ local LAM2 = LibStub:GetLibrary("LibAddonMenu-2.0")
 PacsAddon = {}
 
 PacsAddon.name = "PacGuildTools"
-PacsAddon.version = "1.1.0"
+PacsAddon.version = "1.2.0"
 PacsAddon.raffledescText = [[
 This addon allows you to run raffles, randomly picking a winner.  There are three raffle modes currently supported.
     
@@ -64,17 +64,19 @@ function PacsAddon:Initialize()
     end
 
     -- If this is the first run, or the saved settings file is missing lets set the first guild as the default
-    if isempty(activeGuild) then
-        activeGuild = GetGuildName(1)
+    if isempty(activeGuildID) then
+        activeGuildID = GetGuildId(1)
+        activeGuild = GetGuildName(activeGuildID)
         PacsAddon.savedVariables.activeGuild = activeGuild
+        PacsAddon.savedVariables.activeGuildID = activeGuildID
     end
 
-    -- Currently the Saved Settings saves the Guilds Name.  Lets grab the active guilds index ID.  
-    for guildIndex = 1, 5 do
-        if activeGuild == GetGuildName(guildIndex) then
-            PacsAddon.savedVariables.activeGuildID = guildIndex
-        end
-    end
+    -- -- Currently the Saved Settings saves the Guilds Name.  Lets grab the active guilds index ID.  
+    -- for guildIndex = 1, 5 do
+    --     if activeGuild == GetGuildName(guildIndex) then
+    --         PacsAddon.savedVariables.activeGuildID = guildIndex
+    --     end
+    -- end
 
     -- Grab the active guilds name and number of members from the ESO API
     guildName = GetGuildName(activeGuildID)
@@ -497,7 +499,8 @@ function PacsAddon.CreateSettingsWindow()
 
     guildNames = {}
     for guildIndex = 1, 5 do
-        local guildName = GetGuildName(guildIndex)
+        local guildID = GetGuildId(guildIndex)
+        local guildName = GetGuildName(guildID)
         table.insert(guildNames, guildName)
     end
 

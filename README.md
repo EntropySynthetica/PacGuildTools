@@ -10,13 +10,10 @@ ESO Addon for Guild Roster Management by Erica Zavaleta, @LadyWinry
 * Export Current Guild Roster to Documents/Elder Scrolls Online/live/SavedVariables/PacGuildTools.lua
 * Guild Roster Raffle Generator
 
-# Short Term Todo
-* Create a converter for the exported guild roster from lua format to CSV
-* Create an in game browser of the guild roster with more detailed information and filters than the stock guild roster.  
-* Create an export of the guild bank deposits / withdrawal history to CSV
-
-# Long Term Todo
-* Placeholder for long term development roadmap
+# Todo
+* Spin off raffle tool into it's own seperate addon.  Get it on Minion
+* Refactor the code and make sure all variables are in a proper namespace.
+* After Elsweyr patch selecting a different guild is currently not working.  The app will default to whatever your first guild is.  
 
 # How to run a raffle
 This addon allows you to run raffles, randomly picking a winner.  There are three raffle modes currently supported.
