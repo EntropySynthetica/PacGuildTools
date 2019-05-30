@@ -7,7 +7,7 @@ local LAM2 = LibStub:GetLibrary("LibAddonMenu-2.0")
 PacsAddon = {}
 
 PacsAddon.name = "PacGuildTools"
-PacsAddon.version = "1.2.0"
+PacsAddon.version = "1.3.0"
 PacsAddon.raffledescText = [[
 This addon allows you to run raffles, randomly picking a winner.  There are three raffle modes currently supported.
     
@@ -81,19 +81,6 @@ function PacsAddon:Initialize()
     -- Grab the active guilds name and number of members from the ESO API
     guildName = GetGuildName(activeGuildID)
     guildMemberNum = GetNumGuildMembers(activeGuildID)
-
-    UpdateGuildRoster()
-
-    if PacsAddon.savedVariables.enableBankExport == true then
-        UpdateGuildHistory()
-        UpdateGuildStoreHistory()
-
-        -- Poll the Server every 2.5 seconds to get Guild Bank History filled. 
-        EVENT_MANAGER:RegisterForUpdate("UpdateGuildHistory", 2500, LoadGuildHistoryBackfill)
-
-        -- Poll the Server every 2.5 seconds to get Guild Store History filled. 
-        EVENT_MANAGER:RegisterForUpdate("UpdateGuildStore", 2500, LoadGuildStoreBackfill)
-    end
 
 
     --ZO_ChatSystem_AddEventHandler(EVENT_CHAT_MESSAGE_CHANNEL, ChatMessageChannel)
@@ -199,155 +186,6 @@ function UpdateGuildRoster(extra)
     end
 end
 
-
--- Update Guild Bank History in Saved Variables
-function UpdateGuildHistory()
-    local activeGuildID = PacsAddon.savedVariables.activeGuildID
-    local enableDebug = PacsAddon.savedVariables.enableDebug
-
-    RequestGuildHistoryCategoryOlder(activeGuildID, GUILD_HISTORY_BANK)
-    local numGuildBankEvents = GetNumGuildEvents(activeGuildID, GUILD_HISTORY_BANK)
-    local guildBankHistory = {}
-    for GuildBankEventsIndex = 1, numGuildBankEvents do
-        local eventType, secsSinceEvent, displayName, count, itemLink = GetGuildEventInfo(activeGuildID, GUILD_HISTORY_BANK, GuildBankEventsIndex)
-        local timestamp = os.date("%m/%d/%Y %H:%M:%S %z", (os.time() - secsSinceEvent))
-
-        if eventType == 21 then
-            eventName = "Bankgold Added"
-        elseif eventType == 22 then
-            eventName = "Bankgold Removed"
-        elseif eventType == 14 then
-            eventName = "Bankitem Removed"
-        elseif eventType == 13 then
-            eventName = "Bankitem Added"
-        else
-            eventName = "Unknown"
-        end
-
-        avgPrice = {}
-        avgPrice = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
-        if isempty(avgPrice) == false then
-            avgPrice = avgPrice['Avg']
-        end 
-
-        local data = {
-                    eventName = eventName,
-                    eventType = eventType,
-                    secsSinceEvent = secsSinceEvent,
-                    timestamp = timestamp,
-                    displayName = displayName,
-                    count = count,
-                    itemLink = itemLink,
-                    avgPrice = avgPrice,
-                    item = GetItemLinkName(itemLink)
-                }
-        guildBankHistory[GuildBankEventsIndex] = data
-    end
-
-    PacsAddon.savedVariables.guildDepositList = guildBankHistory
-
-    if enableDebug == true then
-        d("Updated Saved Var Guild history with " .. numGuildBankEvents .. " events.")
-    end
-end
-
--- Update Guild Store History in Saved Variables
-function UpdateGuildStoreHistory()
-    local activeGuildID = PacsAddon.savedVariables.activeGuildID
-    local enableDebug = PacsAddon.savedVariables.enableDebug
-
-    RequestGuildHistoryCategoryOlder(activeGuildID, GUILD_HISTORY_STORE)
-    local numGuildStoreEvents = GetNumGuildEvents(activeGuildID, GUILD_HISTORY_STORE)
-    local guildStoreHistory = {}
-    for GuildStoreEventsIndex = 1, numGuildStoreEvents do
-        local eventType, secsSinceEvent, param1, param2, param3, param4, param5, param6 = GetGuildEventInfo(activeGuildID, GUILD_HISTORY_STORE, GuildStoreEventsIndex)
-        local timestamp = os.date("%m/%d/%Y %H:%M:%S %z", (os.time() - secsSinceEvent))
-
-        if eventType == 15 then
-            eventName = "Item Sold"
-        elseif eventType == 41 then
-            eventName = "Item Listed"
-        elseif eventType == 24 then
-            eventName = "Guild Trader Bid"
-        else
-            eventName = "Unknown"
-        end
-
-        local data = {
-                    eventName = eventName,
-                    eventType = eventType,
-                    secsSinceEvent = secsSinceEvent,
-                    timestamp = timestamp,
-                    sellerName = param1,
-                    buyerName = param2,
-                    count = param3,
-                    itemLink = param4,
-                    sellPrice = param5,
-                    guildCut = param6,
-                    item = GetItemLinkName(param4)
-                }
-        guildStoreHistory[GuildStoreEventsIndex] = data
-    end
-
-    PacsAddon.savedVariables.guildStoreList = guildStoreHistory
-
-    if enableDebug == true then
-        d("Updated Saved Var Guild Store history with " .. numGuildStoreEvents .. " events.")
-    end
-end
-
--- Function to poll the server for Guild Bank History 100ish items at a time. 
-function LoadGuildHistoryBackfill()
-    local activeGuildID = PacsAddon.savedVariables.activeGuildID
-    local enableDebug = PacsAddon.savedVariables.enableDebug
-
-    RequestGuildHistoryCategoryOlder(activeGuildID, GUILD_HISTORY_BANK)
-    local moreEvents = (DoesGuildHistoryCategoryHaveMoreEvents(activeGuildID, GUILD_HISTORY_BANK))
-
-    if moreEvents then
-        moreEventsString = "Yes"
-    else 
-        moreEventsString = "No"
-    end
-
-    if enableDebug == true then
-        d("Are there more guild bank history events to load? " .. moreEventsString)
-        d("So far we have loaded " .. GetNumGuildEvents(activeGuildID, GUILD_HISTORY_BANK) .. " guild bank events")
-    end
-
-    -- If there are no more events to load lets stop checking every 2.5 seconds, and update our saved variables.
-    if moreEvents == false then
-        EVENT_MANAGER:UnregisterForUpdate("UpdateGuildHistory")
-        UpdateGuildHistory()
-    end
-end
-
-
--- Function to poll the server for Guild Store History 100ish items at a time. 
-function LoadGuildStoreBackfill()
-    local activeGuildID = PacsAddon.savedVariables.activeGuildID
-    local enableDebug = PacsAddon.savedVariables.enableDebug
-
-    RequestGuildHistoryCategoryOlder(activeGuildID, GUILD_HISTORY_STORE)
-    local moreEvents = (DoesGuildHistoryCategoryHaveMoreEvents(activeGuildID, GUILD_HISTORY_STORE))
-
-    if moreEvents then
-        moreEventsString = "Yes"
-    else 
-        moreEventsString = "No"
-    end
-
-    if enableDebug == true then
-        d("Are there more guild store history events to load? " .. moreEventsString)
-        d("So far we have loaded " .. GetNumGuildEvents(activeGuildID, GUILD_HISTORY_STORE) .. " guild store events")
-    end
-
-    -- If there are no more events to load lets stop checking every 2.5 seconds, and update our saved variables.
-    if moreEvents == false then
-        EVENT_MANAGER:UnregisterForUpdate("UpdateGuildStore")
-        UpdateGuildStoreHistory()
-    end
-end
 
 -- Check chat for magic word and enter those folks in the raffle. 
 function ChatMessageChannel(messageType, fromName, text, isCustomerService, fromDisplayName)
@@ -541,24 +379,10 @@ function PacsAddon.CreateSettingsWindow()
 
         [6] = {
             type = "header",
-            name = "Guild Bank History",
-        },
-
-        [7] = {
-            type = "checkbox",
-            name = "Enable Export of Guild History",
-            tooltip = "Save an Export of Guild Bank History to Saved Settings for use outside of ESO.",
-            default = false,
-            getFunc = function() return PacsAddon.savedVariables.enableBankExport end,
-            setFunc = function(newValue) PacsAddon.savedVariables.enableBankExport = newValue end,
-        },
-
-        [8] = {
-            type = "header",
             name = "Misc Settings",
         },
 
-        [9] = {
+        [7] = {
             type = "checkbox",
             name = "Enable Clock",
             default = false,
@@ -566,12 +390,12 @@ function PacsAddon.CreateSettingsWindow()
             setFunc = function(newValue) PacsAddon.savedVariables.enableClock = newValue end,
         },
 
-        [10] = {
+        [8] = {
             type = "header",
             name = "Debug Messages",
         },
 
-        [11] = {
+        [9] = {
             type = "checkbox",
             name = "Enable Debug Messages",
             default = false,

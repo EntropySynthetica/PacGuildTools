@@ -7,11 +7,10 @@ ESO Addon for Guild Roster Management by Erica Zavaleta, @LadyWinry
 * Rename the directory from PacGuildTools-Master to PacGuildTools 
 
 # Current Features
-* Export Current Guild Roster to Documents/Elder Scrolls Online/live/SavedVariables/PacGuildTools.lua
+* A realtime Clock
 * Guild Roster Raffle Generator
 
 # Todo
-* Spin off raffle tool into it's own seperate addon.  Get it on Minion
 * Refactor the code and make sure all variables are in a proper namespace.
 * After Elsweyr patch selecting a different guild is currently not working.  The app will default to whatever your first guild is.  
 
