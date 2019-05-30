@@ -111,13 +111,13 @@ end
 
 
 -- Summon Pacrooti!!!
-function summon_pacrooti(extra)
+function PacsAddon.summon_pacrooti(extra)
     SetCrownCrateNPCVisible(true)
 end
 
 
 -- Dismiss Pacrooti
-function dismiss_pacrooti(extra)
+function PacsAddon.dismiss_pacrooti(extra)
     SetCrownCrateNPCVisible(false)
 end
 
@@ -204,7 +204,7 @@ end
 
 
 -- Show who is on the Raffle Roster
-function pgt_raffle_show()
+function PacsAddon.pgt_raffle_show()
     d("The Following Have Entered the Raffle.")
     for index,value in pairs(PacsAddon.raffleParticipants) do
         d(value)
@@ -213,14 +213,14 @@ end
 
 
 -- Clear raffle roster
-function pgt_raffle_clear()
+function PacsAddon.pgt_raffle_clear()
     PacsAddon.raffleParticipants = {}
     d("Raffle Roster has been cleared.")
 end
 
 
 -- Run Raffle From Roster
-function pgt_raffle()
+function PacsAddon.pgt_raffle()
     if next(PacsAddon.raffleParticipants) == nil then
         d("Nobody has entered the raffle.")
     else
@@ -231,7 +231,7 @@ end
 
 
 -- Run Raffle from all Guild Roster
-function pgt_raffle_guild()
+function PacsAddon.pgt_raffle_guild()
     local activeGuildID = PacsAddon.savedVariables.activeGuildID
     guildMemberNum = GetNumGuildMembers(activeGuildID)
     local rafflewinner = math.random(1, guildMemberNum)
@@ -251,7 +251,7 @@ end
 
 
 -- Run Raffle from online guild members
-function pgt_raffle_online()
+function PacsAddon.pgt_raffle_online()
     activeGuildID = PacsAddon.savedVariables.activeGuildID
     guildMemberNum = GetNumGuildMembers(activeGuildID)
     repeat
@@ -409,12 +409,12 @@ function PacsAddon.CreateSettingsWindow()
 end
 
 -- Register our slash commands
-SLASH_COMMANDS["/pgt_raffle"] = pgt_raffle
-SLASH_COMMANDS["/pgt_raffle_online"] = pgt_raffle_online
-SLASH_COMMANDS["/pgt_raffle_guild"] = pgt_raffle_guild
-SLASH_COMMANDS["/pgt_raffle_show"] = pgt_raffle_show
-SLASH_COMMANDS["/pgt_raffle_clear"] = pgt_raffle_clear
-SLASH_COMMANDS["/summon_pacrooti"] = summon_pacrooti
-SLASH_COMMANDS["/dismiss_pacrooti"] = dismiss_pacrooti
+SLASH_COMMANDS["/pgt_raffle"] = PacsAddon.pgt_raffle
+SLASH_COMMANDS["/pgt_raffle_online"] = PacsAddon.pgt_raffle_online
+SLASH_COMMANDS["/pgt_raffle_guild"] = PacsAddon.pgt_raffle_guild
+SLASH_COMMANDS["/pgt_raffle_show"] = PacsAddon.pgt_raffle_show
+SLASH_COMMANDS["/pgt_raffle_clear"] = PacsAddon.pgt_raffle_clear
+SLASH_COMMANDS["/summon_pacrooti"] = PacsAddon.summon_pacrooti
+SLASH_COMMANDS["/dismiss_pacrooti"] = PacsAddon.dismiss_pacrooti
 
 EVENT_MANAGER:RegisterForEvent(PacsAddon.name, EVENT_ADD_ON_LOADED, PacsAddon.OnAddOnLoaded)
