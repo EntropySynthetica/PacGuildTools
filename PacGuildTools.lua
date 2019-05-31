@@ -1,6 +1,7 @@
 
 -- Load Required Libraries
 local LAM2 = LibStub:GetLibrary("LibAddonMenu-2.0")
+local chat = LibChatMessage.Create("PacGuildTools", "PGT")
 --local LIBMW = LibStub:GetLibrary("LibMsgWin-1.0")
 
 -- Initialize our Namespace Table
@@ -90,6 +91,8 @@ function PacsAddon:Initialize()
 
     --local myMsgWindow = LIBMW:CreateMsgWindow("PacGuildTools", "Pacrooti's Guild Tools", 0, 0)
     --myMsgWindow:AddText("Heres a chat message in red", 1, 0, 0)
+
+    chat:SetEnabled(true)
 
     -- Debug output if we have that enabled. 
     if enableDebug == true then
@@ -193,10 +196,10 @@ function ChatMessageChannel(messageType, fromName, text, isCustomerService, from
 
     if string.match(text, magicWord) then
         if tablesearch(fromDisplayName, PacsAddon.raffleParticipants) then
-            d(fromDisplayName .. " has already entered")
+            chat:SetTagColor("ffb600"):Print(fromDisplayName .. " has already entered")
         else
             table.insert(PacsAddon.raffleParticipants, fromDisplayName)
-            d(fromDisplayName .. " has been entered!")
+            chat:SetTagColor("ffb600"):Print(fromDisplayName .. " has been entered!")
         end
 
     end
@@ -205,9 +208,9 @@ end
 
 -- Show who is on the Raffle Roster
 function PacsAddon.pgt_raffle_show()
-    d("The Following Have Entered the Raffle.")
+    chat:SetTagColor("ffb600"):Print("The Following Have Entered the Raffle.")
     for index,value in pairs(PacsAddon.raffleParticipants) do
-        d(value)
+        chat:SetTagColor("ffb600"):Print(value)
     end
 end
 
@@ -215,17 +218,17 @@ end
 -- Clear raffle roster
 function PacsAddon.pgt_raffle_clear()
     PacsAddon.raffleParticipants = {}
-    d("Raffle Roster has been cleared.")
+    chat:SetTagColor("ffb600"):Print("Raffle Roster has been cleared.")
 end
 
 
 -- Run Raffle From Roster
 function PacsAddon.pgt_raffle()
     if next(PacsAddon.raffleParticipants) == nil then
-        d("Nobody has entered the raffle.")
+        chat:SetTagColor("ffb600"):Print("Nobody has entered the raffle.")
     else
         local winnerName = PacsAddon.raffleParticipants[math.random(#PacsAddon.raffleParticipants)]
-        d("Winner is " .. winnerName)
+        chat:SetTagColor("ffb600"):Print("Winner is " .. winnerName)
     end
 end
 
@@ -246,7 +249,7 @@ function PacsAddon.pgt_raffle_guild()
         elseif status == 4 then
             statusString = "Offline"
         end
-    d("Winner is " .. winnerName .. " and is " .. statusString)
+    chat:SetTagColor("ffb600"):Print("Winner is " .. winnerName .. " and is " .. statusString)
 end
 
 
@@ -272,7 +275,7 @@ function PacsAddon.pgt_raffle_online()
         -- d("Debug Winner is " .. winnerName .. " and is " .. statusString .. " " .. status)
     until(status ~= 4)
 
-    d("Winner is " .. winnerName)
+    chat:SetTagColor("ffb600"):Print("Winner is " .. winnerName)
 end
 
 
