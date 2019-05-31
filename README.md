@@ -6,13 +6,26 @@ ESO Addon for Guild Roster Management by Erica Zavaleta, @LadyWinry
 * Open the zip and copy the folder to Documents/Elder Scrolls Online/live/AddOns
 * Rename the directory from PacGuildTools-Master to PacGuildTools 
 
+# New in this version
+* Added Chat spam
+* Split off Banking tools into another addon. 
+* Changed app to support Libaddonmenu and libchatmessage as downloaded from Minion.
+* All non debug messages are now presented thru libchatmessage.  
+
 # Current Features
 * A realtime Clock
 * Guild Roster Raffle Generator
+* Chat spam messages
 
 # Todo
 * Refactor the code and make sure all variables are in a proper namespace.
 * After Elsweyr patch selecting a different guild is currently not working.  The app will default to whatever your first guild is.  
+
+# How to use chat spam messages. 
+Use the /pgt command to bring up Pacrooti's Guild Tools Settings. Enter your messages.  
+
+To send a message type /pgt_spam followed by the message number and guild number.  For example, to send message 1 to your second guild
+type /pgt_spam1g2
 
 # How to run a raffle
 This addon allows you to run raffles, randomly picking a winner.  There are three raffle modes currently supported.
