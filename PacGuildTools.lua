@@ -64,6 +64,18 @@ function PacsAddon:Initialize()
         PacsAddon.savedVariables.raffleMagicWord = "EnterRaffle"
     end
 
+    if isempty(PacsAddon.savedVariables.chatspammsg1) then
+        PacsAddon.savedVariables.chatspammsg1 = "Spam Message 1 Goes Here"
+    end
+
+    if isempty(PacsAddon.savedVariables.chatspammsg2) then
+        PacsAddon.savedVariables.chatspammsg2 = "Spam Message 2 Goes Here"
+    end
+
+    if isempty(PacsAddon.savedVariables.chatspammsg3) then
+        PacsAddon.savedVariables.chatspammsg3 = "Spam Message 3 Goes Here"
+    end
+
     -- If this is the first run, or the saved settings file is missing lets set the first guild as the default
     if isempty(activeGuildID) then
         activeGuildID = GetGuildId(1)
@@ -363,16 +375,58 @@ function PacsAddon.CreateSettingsWindow()
 
         [3] = {
             type = "header",
-            name = "Raffle Settings",
+            name = "Chat Spam Messages",
         },
 
         [4] = {
+            type = "description",
+            text = "To use chat spam type /pgt_spam followed by the message number and the guild number. For example to spam message one to your second guild type /pgt_spam1g2",
+            width = "full",
+        },
+
+        [5] = {
+            type = "editbox",
+            name = "Chat Spam Message 1",
+            isExtraWide = true,
+            default = true,
+            isMultiline = true,
+            getFunc = function() return PacsAddon.savedVariables.chatspammsg1 end,
+            setFunc = function(newValue) PacsAddon.savedVariables.chatspammsg1 = newValue end,
+        },
+
+        [6] = {
+            type = "editbox",
+            name = "Chat Spam Message 2",
+            isExtraWide = true,
+            default = true,
+            isMultiline = true,
+            getFunc = function() return PacsAddon.savedVariables.chatspammsg2 end,
+            setFunc = function(newValue) PacsAddon.savedVariables.chatspammsg2 = newValue end,
+        },
+
+        [7] = {
+            type = "editbox",
+            name = "Chat Spam Message 3",
+            isExtraWide = true,
+            default = true,
+            isMultiline = true,
+            getFunc = function() return PacsAddon.savedVariables.chatspammsg3 end,
+            setFunc = function(newValue) PacsAddon.savedVariables.chatspammsg3 = newValue end,
+        },
+
+
+        [8] = {
+            type = "header",
+            name = "Raffle Settings",
+        },
+
+        [9] = {
             type = "description",
             text = PacsAddon.raffledescText,
             width = "full",	--or "half" (optional),
         },
 
-        [5] = {
+        [10] = {
             type = "editbox",
             name = "Magic Word to get on Raffle Roster",
             default = true,
@@ -380,12 +434,12 @@ function PacsAddon.CreateSettingsWindow()
             setFunc = function(newValue) PacsAddon.savedVariables.raffleMagicWord = newValue end,
         },
 
-        [6] = {
+        [11] = {
             type = "header",
             name = "Misc Settings",
         },
 
-        [7] = {
+        [12] = {
             type = "checkbox",
             name = "Enable Clock",
             default = false,
@@ -393,12 +447,12 @@ function PacsAddon.CreateSettingsWindow()
             setFunc = function(newValue) PacsAddon.savedVariables.enableClock = newValue end,
         },
 
-        [8] = {
+        [13] = {
             type = "header",
             name = "Debug Messages",
         },
 
-        [9] = {
+        [14] = {
             type = "checkbox",
             name = "Enable Debug Messages",
             default = false,
@@ -411,6 +465,73 @@ function PacsAddon.CreateSettingsWindow()
  
 end
 
+-- Functions to send message to chat.  
+-- Spam Message 1
+function PacsAddon.chatsendspam1g1()
+    local chat_message = PacsAddon.savedVariables.chatspammsg1
+    CHAT_SYSTEM:StartTextEntry(chat_message, CHAT_CHANNEL_GUILD_1)
+end
+function PacsAddon.chatsendspam1g2()
+    local chat_message = PacsAddon.savedVariables.chatspammsg1
+    CHAT_SYSTEM:StartTextEntry(chat_message, CHAT_CHANNEL_GUILD_2)
+end
+function PacsAddon.chatsendspam1g3()
+    local chat_message = PacsAddon.savedVariables.chatspammsg1
+    CHAT_SYSTEM:StartTextEntry(chat_message, CHAT_CHANNEL_GUILD_3)
+end
+function PacsAddon.chatsendspam1g4()
+    local chat_message = PacsAddon.savedVariables.chatspammsg1
+    CHAT_SYSTEM:StartTextEntry(chat_message, CHAT_CHANNEL_GUILD_4)
+end
+function PacsAddon.chatsendspam1g5()
+    local chat_message = PacsAddon.savedVariables.chatspammsg1
+    CHAT_SYSTEM:StartTextEntry(chat_message, CHAT_CHANNEL_GUILD_5)
+end
+
+-- Spam Message 2
+function PacsAddon.chatsendspam2g1()
+    local chat_message = PacsAddon.savedVariables.chatspammsg2
+    CHAT_SYSTEM:StartTextEntry(chat_message, CHAT_CHANNEL_GUILD_1)
+end
+function PacsAddon.chatsendspam2g2()
+    local chat_message = PacsAddon.savedVariables.chatspammsg2
+    CHAT_SYSTEM:StartTextEntry(chat_message, CHAT_CHANNEL_GUILD_2)
+end
+function PacsAddon.chatsendspam2g3()
+    local chat_message = PacsAddon.savedVariables.chatspammsg2
+    CHAT_SYSTEM:StartTextEntry(chat_message, CHAT_CHANNEL_GUILD_3)
+end
+function PacsAddon.chatsendspam2g4()
+    local chat_message = PacsAddon.savedVariables.chatspammsg2
+    CHAT_SYSTEM:StartTextEntry(chat_message, CHAT_CHANNEL_GUILD_4)
+end
+function PacsAddon.chatsendspam2g5()
+    local chat_message = PacsAddon.savedVariables.chatspammsg2
+    CHAT_SYSTEM:StartTextEntry(chat_message, CHAT_CHANNEL_GUILD_5)
+end
+
+-- Spam Message 3
+function PacsAddon.chatsendspam3g1()
+    local chat_message = PacsAddon.savedVariables.chatspammsg3
+    CHAT_SYSTEM:StartTextEntry(chat_message, CHAT_CHANNEL_GUILD_1)
+end
+function PacsAddon.chatsendspam3g2()
+    local chat_message = PacsAddon.savedVariables.chatspammsg3
+    CHAT_SYSTEM:StartTextEntry(chat_message, CHAT_CHANNEL_GUILD_2)
+end
+function PacsAddon.chatsendspam3g3()
+    local chat_message = PacsAddon.savedVariables.chatspammsg3
+    CHAT_SYSTEM:StartTextEntry(chat_message, CHAT_CHANNEL_GUILD_3)
+end
+function PacsAddon.chatsendspam3g4()
+    local chat_message = PacsAddon.savedVariables.chatspammsg3
+    CHAT_SYSTEM:StartTextEntry(chat_message, CHAT_CHANNEL_GUILD_4)
+end
+function PacsAddon.chatsendspam3g5()
+    local chat_message = PacsAddon.savedVariables.chatspammsg3
+    CHAT_SYSTEM:StartTextEntry(chat_message, CHAT_CHANNEL_GUILD_5)
+end
+
 -- Register our slash commands
 SLASH_COMMANDS["/pgt_raffle"] = PacsAddon.pgt_raffle
 SLASH_COMMANDS["/pgt_raffle_online"] = PacsAddon.pgt_raffle_online
@@ -419,5 +540,23 @@ SLASH_COMMANDS["/pgt_raffle_show"] = PacsAddon.pgt_raffle_show
 SLASH_COMMANDS["/pgt_raffle_clear"] = PacsAddon.pgt_raffle_clear
 SLASH_COMMANDS["/summon_pacrooti"] = PacsAddon.summon_pacrooti
 SLASH_COMMANDS["/dismiss_pacrooti"] = PacsAddon.dismiss_pacrooti
+
+SLASH_COMMANDS["/pgt_spam1g1"] = PacsAddon.chatsendspam1g1
+SLASH_COMMANDS["/pgt_spam1g2"] = PacsAddon.chatsendspam1g1
+SLASH_COMMANDS["/pgt_spam1g3"] = PacsAddon.chatsendspam1g1
+SLASH_COMMANDS["/pgt_spam1g4"] = PacsAddon.chatsendspam1g1
+SLASH_COMMANDS["/pgt_spam1g5"] = PacsAddon.chatsendspam1g1
+
+SLASH_COMMANDS["/pgt_spam2g1"] = PacsAddon.chatsendspam1g1
+SLASH_COMMANDS["/pgt_spam2g2"] = PacsAddon.chatsendspam1g1
+SLASH_COMMANDS["/pgt_spam2g3"] = PacsAddon.chatsendspam1g1
+SLASH_COMMANDS["/pgt_spam2g4"] = PacsAddon.chatsendspam1g1
+SLASH_COMMANDS["/pgt_spam2g5"] = PacsAddon.chatsendspam1g1
+
+SLASH_COMMANDS["/pgt_spam3g1"] = PacsAddon.chatsendspam1g1
+SLASH_COMMANDS["/pgt_spam3g2"] = PacsAddon.chatsendspam1g1
+SLASH_COMMANDS["/pgt_spam3g3"] = PacsAddon.chatsendspam1g1
+SLASH_COMMANDS["/pgt_spam3g4"] = PacsAddon.chatsendspam1g1
+SLASH_COMMANDS["/pgt_spam3g5"] = PacsAddon.chatsendspam1g1
 
 EVENT_MANAGER:RegisterForEvent(PacsAddon.name, EVENT_ADD_ON_LOADED, PacsAddon.OnAddOnLoaded)
