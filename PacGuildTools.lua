@@ -76,6 +76,14 @@ function PacsAddon:Initialize()
         PacsAddon.savedVariables.chatspammsg3 = "Spam Message 3 Goes Here"
     end
 
+    if isempty(PacsAddon.savedVariables.chatspammsg3) then
+        PacsAddon.savedVariables.chatspammsg3 = "Spam Message 3 Goes Here"
+    end
+
+    if isempty(PacsAddon.savedVariables.chatspamwelcome1) then
+        PacsAddon.savedVariables.chatspamwelcome1 = "Hello and Welcome.  Please check out our MOTD to see what we are all about"
+    end
+
     -- If this is the first run, or the saved settings file is missing lets set the first guild as the default
     if isempty(activeGuildID) then
         activeGuildID = GetGuildId(1)
@@ -215,6 +223,13 @@ function ChatMessageChannel(messageType, fromName, text, isCustomerService, from
         end
 
     end
+end
+
+-- This is ran if someone joins a guild. 
+function PacsAddon.guildJoin(eventCode, guildId, DisplayName)
+    d(eventCode)
+    d(guildId)
+    d(DisplayName)
 end
 
 
@@ -414,19 +429,48 @@ function PacsAddon.CreateSettingsWindow()
             setFunc = function(newValue) PacsAddon.savedVariables.chatspammsg3 = newValue end,
         },
 
-
         [8] = {
+            type = "header",
+            name = "Guild Join Welcome Message",
+        },
+
+        [9] = {
+            type = "description",
+            text = "Message to Spam when Someone joins the guild.",
+            width = "full",
+        },
+
+        [10] = {
+            type = "checkbox",
+            name = "Enable Guild Welcome Message",
+            default = false,
+            getFunc = function() return PacsAddon.savedVariables.enableguildwelcome end,
+            setFunc = function(newValue) PacsAddon.savedVariables.enableguildwelcome = newValue end,
+        },
+
+        [11] = {
+            type = "editbox",
+            name = "Guild Welcome Message",
+            isExtraWide = true,
+            default = true,
+            isMultiline = true,
+            getFunc = function() return PacsAddon.savedVariables.chatspamwelcome1 end,
+            setFunc = function(newValue) PacsAddon.savedVariables.chatspamwelcome1 = newValue end,
+        },
+
+
+        [12] = {
             type = "header",
             name = "Raffle Settings",
         },
 
-        [9] = {
+        [13] = {
             type = "description",
             text = PacsAddon.raffledescText,
             width = "full",	--or "half" (optional),
         },
 
-        [10] = {
+        [14] = {
             type = "editbox",
             name = "Magic Word to get on Raffle Roster",
             default = true,
@@ -434,12 +478,12 @@ function PacsAddon.CreateSettingsWindow()
             setFunc = function(newValue) PacsAddon.savedVariables.raffleMagicWord = newValue end,
         },
 
-        [11] = {
+        [15] = {
             type = "header",
             name = "Misc Settings",
         },
 
-        [12] = {
+        [16] = {
             type = "checkbox",
             name = "Enable Clock",
             default = false,
@@ -447,12 +491,12 @@ function PacsAddon.CreateSettingsWindow()
             setFunc = function(newValue) PacsAddon.savedVariables.enableClock = newValue end,
         },
 
-        [13] = {
+        [17] = {
             type = "header",
             name = "Debug Messages",
         },
 
-        [14] = {
+        [18] = {
             type = "checkbox",
             name = "Enable Debug Messages",
             default = false,
@@ -542,21 +586,22 @@ SLASH_COMMANDS["/summon_pacrooti"] = PacsAddon.summon_pacrooti
 SLASH_COMMANDS["/dismiss_pacrooti"] = PacsAddon.dismiss_pacrooti
 
 SLASH_COMMANDS["/pgt_spam1g1"] = PacsAddon.chatsendspam1g1
-SLASH_COMMANDS["/pgt_spam1g2"] = PacsAddon.chatsendspam1g1
-SLASH_COMMANDS["/pgt_spam1g3"] = PacsAddon.chatsendspam1g1
-SLASH_COMMANDS["/pgt_spam1g4"] = PacsAddon.chatsendspam1g1
-SLASH_COMMANDS["/pgt_spam1g5"] = PacsAddon.chatsendspam1g1
+SLASH_COMMANDS["/pgt_spam1g2"] = PacsAddon.chatsendspam1g2
+SLASH_COMMANDS["/pgt_spam1g3"] = PacsAddon.chatsendspam1g3
+SLASH_COMMANDS["/pgt_spam1g4"] = PacsAddon.chatsendspam1g4
+SLASH_COMMANDS["/pgt_spam1g5"] = PacsAddon.chatsendspam1g5
 
-SLASH_COMMANDS["/pgt_spam2g1"] = PacsAddon.chatsendspam1g1
-SLASH_COMMANDS["/pgt_spam2g2"] = PacsAddon.chatsendspam1g1
-SLASH_COMMANDS["/pgt_spam2g3"] = PacsAddon.chatsendspam1g1
-SLASH_COMMANDS["/pgt_spam2g4"] = PacsAddon.chatsendspam1g1
-SLASH_COMMANDS["/pgt_spam2g5"] = PacsAddon.chatsendspam1g1
+SLASH_COMMANDS["/pgt_spam2g1"] = PacsAddon.chatsendspam2g1
+SLASH_COMMANDS["/pgt_spam2g2"] = PacsAddon.chatsendspam2g2
+SLASH_COMMANDS["/pgt_spam2g3"] = PacsAddon.chatsendspam2g3
+SLASH_COMMANDS["/pgt_spam2g4"] = PacsAddon.chatsendspam2g4
+SLASH_COMMANDS["/pgt_spam2g5"] = PacsAddon.chatsendspam2g5
 
-SLASH_COMMANDS["/pgt_spam3g1"] = PacsAddon.chatsendspam1g1
-SLASH_COMMANDS["/pgt_spam3g2"] = PacsAddon.chatsendspam1g1
-SLASH_COMMANDS["/pgt_spam3g3"] = PacsAddon.chatsendspam1g1
-SLASH_COMMANDS["/pgt_spam3g4"] = PacsAddon.chatsendspam1g1
-SLASH_COMMANDS["/pgt_spam3g5"] = PacsAddon.chatsendspam1g1
+SLASH_COMMANDS["/pgt_spam3g1"] = PacsAddon.chatsendspam3g1
+SLASH_COMMANDS["/pgt_spam3g2"] = PacsAddon.chatsendspam3g2
+SLASH_COMMANDS["/pgt_spam3g3"] = PacsAddon.chatsendspam3g3
+SLASH_COMMANDS["/pgt_spam3g4"] = PacsAddon.chatsendspam3g4
+SLASH_COMMANDS["/pgt_spam3g5"] = PacsAddon.chatsendspam3g5
 
 EVENT_MANAGER:RegisterForEvent(PacsAddon.name, EVENT_ADD_ON_LOADED, PacsAddon.OnAddOnLoaded)
+EVENT_MANAGER:RegisterForEvent(PacsAddon.name, EVENT_GUILD_MEMBER_ADDED, PacsAddon.guildJoin)
