@@ -81,7 +81,7 @@ function PacsAddon:Initialize()
     end
 
     if isempty(PacsAddon.savedVariables.chatspamwelcome1) then
-        PacsAddon.savedVariables.chatspamwelcome1 = "Hello and Welcome.  Please check out our MOTD to see what we are all about"
+        PacsAddon.savedVariables.chatspamwelcome1 = "Please check out our MOTD to see what we are all about."
     end
 
     -- If this is the first run, or the saved settings file is missing lets set the first guild as the default
@@ -106,6 +106,9 @@ function PacsAddon:Initialize()
 
     --ZO_ChatSystem_AddEventHandler(EVENT_CHAT_MESSAGE_CHANNEL, ChatMessageChannel)
     ZO_PreHook(ZO_ChatSystem_GetEventHandlers(), EVENT_CHAT_MESSAGE_CHANNEL, ChatMessageChannel)
+
+    -- Listen for guild join events
+    EVENT_MANAGER:RegisterForEvent(PacsAddon.name, EVENT_GUILD_MEMBER_ADDED, PacsAddon.guildJoin)
 
     PacsAddon.savedVariables.lastUpdate = time
 
@@ -227,9 +230,41 @@ end
 
 -- This is ran if someone joins a guild. 
 function PacsAddon.guildJoin(eventCode, guildId, DisplayName)
-    d(eventCode)
-    d(guildId)
-    d(DisplayName)
+    --d(eventCode)
+    --d(guildId)
+    --d(DisplayName)
+
+    if PacsAddon.savedVariables.enableguildwelcome == true then
+
+        for guildIndex = 1, 5 do
+            if guildId == GetGuildId(guildIndex) then
+                local guildName = GetGuildName(guildId)
+                local welcomeMsg = "Welcome " .. DisplayName .. " to " .. guildName .. "! " .. PacsAddon.savedVariables.chatspamwelcome1
+
+                if guildIndex == 1 then
+                    if PacsAddon.savedVariables.enableguildwelcomeG1 == true then
+                        CHAT_SYSTEM:StartTextEntry(welcomeMsg, CHAT_CHANNEL_GUILD_1)
+                    end
+                elseif guildIndex == 2 then
+                    if PacsAddon.savedVariables.enableguildwelcomeG2 == true then
+                        CHAT_SYSTEM:StartTextEntry(welcomeMsg, CHAT_CHANNEL_GUILD_2)
+                    end
+                elseif guildIndex == 3 then
+                    if PacsAddon.savedVariables.enableguildwelcomeG3 == true then
+                        CHAT_SYSTEM:StartTextEntry(welcomeMsg, CHAT_CHANNEL_GUILD_3)
+                    end
+                elseif guildIndex == 4 then
+                    if PacsAddon.savedVariables.enableguildwelcomeG4 == true then
+                        CHAT_SYSTEM:StartTextEntry(welcomeMsg, CHAT_CHANNEL_GUILD_4)
+                    end
+                elseif guildIndex == 5 then
+                    if PacsAddon.savedVariables.enableguildwelcomeG5 == true then
+                        CHAT_SYSTEM:StartTextEntry(welcomeMsg, CHAT_CHANNEL_GUILD_5)
+                    end
+                end
+            end
+        end
+    end
 end
 
 
@@ -441,14 +476,6 @@ function PacsAddon.CreateSettingsWindow()
         },
 
         [10] = {
-            type = "checkbox",
-            name = "Enable Guild Welcome Message",
-            default = false,
-            getFunc = function() return PacsAddon.savedVariables.enableguildwelcome end,
-            setFunc = function(newValue) PacsAddon.savedVariables.enableguildwelcome = newValue end,
-        },
-
-        [11] = {
             type = "editbox",
             name = "Guild Welcome Message",
             isExtraWide = true,
@@ -458,19 +485,59 @@ function PacsAddon.CreateSettingsWindow()
             setFunc = function(newValue) PacsAddon.savedVariables.chatspamwelcome1 = newValue end,
         },
 
+        [11] = {
+            type = "checkbox",
+            name = "Enable for Guild 1",
+            default = false,
+            getFunc = function() return PacsAddon.savedVariables.enableguildwelcomeG1 end,
+            setFunc = function(newValue) PacsAddon.savedVariables.enableguildwelcomeG1 = newValue end,
+        },
 
         [12] = {
+            type = "checkbox",
+            name = "Enable for Guild 2",
+            default = false,
+            getFunc = function() return PacsAddon.savedVariables.enableguildwelcomeG2 end,
+            setFunc = function(newValue) PacsAddon.savedVariables.enableguildwelcomeG2 = newValue end,
+        },
+
+        [13] = {
+            type = "checkbox",
+            name = "Enable for Guild 3",
+            default = false,
+            getFunc = function() return PacsAddon.savedVariables.enableguildwelcomeG3 end,
+            setFunc = function(newValue) PacsAddon.savedVariables.enableguildwelcomeG3 = newValue end,
+        },
+
+        [14] = {
+            type = "checkbox",
+            name = "Enable for Guild 4",
+            default = false,
+            getFunc = function() return PacsAddon.savedVariables.enableguildwelcomeG4 end,
+            setFunc = function(newValue) PacsAddon.savedVariables.enableguildwelcomeG4 = newValue end,
+        },
+
+        [15] = {
+            type = "checkbox",
+            name = "Enable for Guild 5",
+            default = false,
+            getFunc = function() return PacsAddon.savedVariables.enableguildwelcomeG5 end,
+            setFunc = function(newValue) PacsAddon.savedVariables.enableguildwelcomeG5 = newValue end,
+        },
+
+
+        [16] = {
             type = "header",
             name = "Raffle Settings",
         },
 
-        [13] = {
+        [17] = {
             type = "description",
             text = PacsAddon.raffledescText,
             width = "full",	--or "half" (optional),
         },
 
-        [14] = {
+        [18] = {
             type = "editbox",
             name = "Magic Word to get on Raffle Roster",
             default = true,
@@ -478,12 +545,12 @@ function PacsAddon.CreateSettingsWindow()
             setFunc = function(newValue) PacsAddon.savedVariables.raffleMagicWord = newValue end,
         },
 
-        [15] = {
+        [19] = {
             type = "header",
             name = "Misc Settings",
         },
 
-        [16] = {
+        [20] = {
             type = "checkbox",
             name = "Enable Clock",
             default = false,
@@ -491,12 +558,12 @@ function PacsAddon.CreateSettingsWindow()
             setFunc = function(newValue) PacsAddon.savedVariables.enableClock = newValue end,
         },
 
-        [17] = {
+        [21] = {
             type = "header",
             name = "Debug Messages",
         },
 
-        [18] = {
+        [22] = {
             type = "checkbox",
             name = "Enable Debug Messages",
             default = false,
@@ -604,4 +671,3 @@ SLASH_COMMANDS["/pgt_spam3g4"] = PacsAddon.chatsendspam3g4
 SLASH_COMMANDS["/pgt_spam3g5"] = PacsAddon.chatsendspam3g5
 
 EVENT_MANAGER:RegisterForEvent(PacsAddon.name, EVENT_ADD_ON_LOADED, PacsAddon.OnAddOnLoaded)
-EVENT_MANAGER:RegisterForEvent(PacsAddon.name, EVENT_GUILD_MEMBER_ADDED, PacsAddon.guildJoin)
