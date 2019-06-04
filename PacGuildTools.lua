@@ -212,6 +212,7 @@ function UpdateGuildRoster(extra)
     end
 end
 
+
 -- Function for String Interpolation
 function interp(s, tab)
     return (s:gsub('($%b{})', function(w) return tab[w:sub(3, -2)] or w end))
@@ -233,7 +234,8 @@ function ChatMessageChannel(messageType, fromName, text, isCustomerService, from
     end
 end
 
--- This is ran if someone joins a guild. 
+
+-- This is run if someone joins a guild. 
 function PacsAddon.guildJoin(eventCode, guildId, DisplayName)
     --d(eventCode)
     --d(guildId)
