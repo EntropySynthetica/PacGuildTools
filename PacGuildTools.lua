@@ -480,7 +480,7 @@ function PacsAddon.CreateSettingsWindow()
 
         [9] = {
             type = "description",
-            text = "Message to Spam when Someone joins the guild.  To enter the players name use %{name} and to enter the guild name use %{guild}",
+            text = "Message to Spam when Someone joins the guild.  To enter the players name use ${name} and to enter the guild name use ${guild}",
             width = "full",
         },
 

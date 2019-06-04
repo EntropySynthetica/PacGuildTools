@@ -30,7 +30,7 @@ To send a message type /pgt_spam followed by the message number and guild number
 type /pgt_spam1g2
 
 # How to enter a welcome message. 
-Enter a welcome message and turn on the guilds that can trigger the welcome upon a member joining. The variable %{name} can be used to insert the joining persons @ name into the welcome message.  The varible %{guild} can be used to insert the name of the guild that was joined into the welcome message.  The welcome message will always be put into the guild channel that was joined. 
+Enter a welcome message and turn on the guilds that can trigger the welcome upon a member joining. The variable ${name} can be used to insert the joining persons @ name into the welcome message.  The varible ${guild} can be used to insert the name of the guild that was joined into the welcome message.  The welcome message will always be put into the guild channel that was joined. 
 
 # How to run a raffle
 This addon allows you to run raffles, randomly picking a winner.  There are three raffle modes currently supported.
