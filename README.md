@@ -11,11 +11,13 @@ ESO Addon for Guild Roster Management by Erica Zavaleta, @LadyWinry
 * Split off Banking tools into another addon. 
 * Changed app to support Libaddonmenu and libchatmessage as downloaded from Minion.
 * All non debug messages are now presented thru libchatmessage.  
+* Added GUild Welcome Message
 
 # Current Features
 * A realtime Clock
 * Guild Roster Raffle Generator
 * Chat spam messages
+* Guild Welcome Message
 
 # Todo
 * Refactor the code and make sure all variables are in a proper namespace.
@@ -26,6 +28,9 @@ Use the /pgt command to bring up Pacrooti's Guild Tools Settings. Enter your mes
 
 To send a message type /pgt_spam followed by the message number and guild number.  For example, to send message 1 to your second guild
 type /pgt_spam1g2
+
+# How to enter a welcome message. 
+Enter a welcome message and turn on the guilds that can trigger the welcome upon a member joining. The variable %{name} can be used to insert the joining persons @ name into the welcome message.  The varible %{guild} can be used to insert the name of the guild that was joined into the welcome message.  The welcome message will always be put into the guild channel that was joined. 
 
 # How to run a raffle
 This addon allows you to run raffles, randomly picking a winner.  There are three raffle modes currently supported.

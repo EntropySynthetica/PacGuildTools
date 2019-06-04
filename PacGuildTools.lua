@@ -81,7 +81,7 @@ function PacsAddon:Initialize()
     end
 
     if isempty(PacsAddon.savedVariables.chatspamwelcome1) then
-        PacsAddon.savedVariables.chatspamwelcome1 = "Please check out our MOTD to see what we are all about."
+        PacsAddon.savedVariables.chatspamwelcome1 = "Welcome ${name} to ${guild}! Please check out our MOTD to see what we are all about."
     end
 
     -- If this is the first run, or the saved settings file is missing lets set the first guild as the default
@@ -212,6 +212,11 @@ function UpdateGuildRoster(extra)
     end
 end
 
+-- Function for String Interpolation
+function interp(s, tab)
+    return (s:gsub('($%b{})', function(w) return tab[w:sub(3, -2)] or w end))
+end
+
 
 -- Check chat for magic word and enter those folks in the raffle. 
 function ChatMessageChannel(messageType, fromName, text, isCustomerService, fromDisplayName)
@@ -239,7 +244,9 @@ function PacsAddon.guildJoin(eventCode, guildId, DisplayName)
         for guildIndex = 1, 5 do
             if guildId == GetGuildId(guildIndex) then
                 local guildName = GetGuildName(guildId)
-                local welcomeMsg = "Welcome " .. DisplayName .. " to " .. guildName .. "! " .. PacsAddon.savedVariables.chatspamwelcome1
+                --local welcomeMsg = "Welcome " .. DisplayName .. " to " .. guildName .. "! " .. PacsAddon.savedVariables.chatspamwelcome1
+
+                local welcomeMsg = interp(PacsAddon.savedVariables.chatspamwelcome1, {name = DisplayName, guild = guildName})
 
                 if guildIndex == 1 then
                     if PacsAddon.savedVariables.enableguildwelcomeG1 == true then
@@ -471,7 +478,7 @@ function PacsAddon.CreateSettingsWindow()
 
         [9] = {
             type = "description",
-            text = "Message to Spam when Someone joins the guild.",
+            text = "Message to Spam when Someone joins the guild.  To enter the players name use %{name} and to enter the guild name use %{guild}",
             width = "full",
         },
 
