@@ -8,7 +8,7 @@ local chat = LibChatMessage.Create("PacGuildTools", "PGT")
 PacsAddon = {}
 
 PacsAddon.name = "PacGuildTools"
-PacsAddon.version = "1.3.0"
+PacsAddon.version = "1.3.1"
 PacsAddon.raffledescText = [[
 This addon allows you to run raffles, randomly picking a winner.  There are three raffle modes currently supported.
     

@@ -1,7 +1,7 @@
 ## Title: Pacrooti's Guild Tools
 ## Author: Erica Z.
 ## Description: Tools for managing guild members. 
-## Version: 1.3.0
+## Version: 1.3.1
 ## APIVersion: 100026 100027
 ## DependsOn: LibAddonMenu-2.0 LibChatMessage
 ## OptionalDependsOn:
