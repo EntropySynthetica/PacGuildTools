@@ -6,6 +6,11 @@ ESO Addon for Guild Roster Management by Erica Zavaleta, @LadyWinry
 * Open the zip and copy the folder to Documents/Elder Scrolls Online/live/AddOns
 * Rename the directory from PacGuildTools-Master to PacGuildTools 
 
+# Requirements
+Download the following Libraries are required for this addon to function. They can be downloaded from Minion or esoui.com 
+* LibAddonMenu
+* LibChatMessage
+
 # New in this version
 * Added Chat spam
 * Split off Banking tools into another addon. 
