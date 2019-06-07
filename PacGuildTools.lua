@@ -221,14 +221,19 @@ end
 
 -- Check chat for magic word and enter those folks in the raffle. 
 function ChatMessageChannel(messageType, fromName, text, isCustomerService, fromDisplayName)
-    local magicWord = PacsAddon.savedVariables.raffleMagicWord
+    local magicWord = string.lower(PacsAddon.savedVariables.raffleMagicWord)
+    local text = string.lower(text)
 
     if string.match(text, magicWord) then
         if tablesearch(fromDisplayName, PacsAddon.raffleParticipants) then
             chat:SetTagColor("ffb600"):Print(fromDisplayName .. " has already entered")
         else
-            table.insert(PacsAddon.raffleParticipants, fromDisplayName)
-            chat:SetTagColor("ffb600"):Print(fromDisplayName .. " has been entered!")
+            if (fromDisplayName == GetDisplayName()) and (PacsAddon.savedVariables.raffleself == true) then
+                -- Do nothing because we are disqualifying ourself. 
+            else 
+                table.insert(PacsAddon.raffleParticipants, fromDisplayName)
+                chat:SetTagColor("ffb600"):Print(fromDisplayName .. " has been entered!")
+            end
         end
 
     end
@@ -555,11 +560,19 @@ function PacsAddon.CreateSettingsWindow()
         },
 
         [19] = {
+            type = "checkbox",
+            name = "Disqualify yourself from the raffle",
+            default = true,
+            getFunc = function() return PacsAddon.savedVariables.raffleself end,
+            setFunc = function(newValue) PacsAddon.savedVariables.raffleself = newValue end,
+        },
+
+        [20] = {
             type = "header",
             name = "Misc Settings",
         },
 
-        [20] = {
+        [21] = {
             type = "checkbox",
             name = "Enable Clock",
             default = false,
@@ -567,12 +580,12 @@ function PacsAddon.CreateSettingsWindow()
             setFunc = function(newValue) PacsAddon.savedVariables.enableClock = newValue end,
         },
 
-        [21] = {
+        [22] = {
             type = "header",
             name = "Debug Messages",
         },
 
-        [22] = {
+        [23] = {
             type = "checkbox",
             name = "Enable Debug Messages",
             default = false,
