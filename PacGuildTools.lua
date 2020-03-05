@@ -1,14 +1,13 @@
 
 -- Load Required Libraries
-local LAM2 = LibStub:GetLibrary("LibAddonMenu-2.0")
+local LAM2 = LibAddonMenu2
 local chat = LibChatMessage.Create("PacGuildTools", "PGT")
---local LIBMW = LibStub:GetLibrary("LibMsgWin-1.0")
 
 -- Initialize our Namespace Table
 PacsAddon = {}
 
 PacsAddon.name = "PacGuildTools"
-PacsAddon.version = "1.3.2"
+PacsAddon.version = "1.4.0"
 PacsAddon.raffledescText = [[
 This addon allows you to run raffles, randomly picking a winner.  There are three raffle modes currently supported.
     

@@ -8,15 +8,11 @@ ESO Addon for Guild Roster Management by Erica Zavaleta, @LadyWinry
 
 # Requirements
 Download the following Libraries are required for this addon to function. They can be downloaded from Minion or esoui.com 
-* LibAddonMenu
+* LibAddonMenu-2.0
 * LibChatMessage
 
 # New in this version
-* Added Chat spam
-* Split off Banking tools into another addon. 
-* Changed app to support Libaddonmenu and libchatmessage as downloaded from Minion.
-* All non debug messages are now presented thru libchatmessage.  
-* Added GUild Welcome Message
+* Removed need for LibStub and bundling libs with the app.  Libs are now downloaded via minion.  
 
 # Current Features
 * A realtime Clock
