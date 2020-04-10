@@ -7,7 +7,7 @@ local chat = LibChatMessage.Create("PacGuildTools", "PGT")
 PacsAddon = {}
 
 PacsAddon.name = "PacGuildTools"
-PacsAddon.version = "1.4.0"
+PacsAddon.version = "1.5.0"
 PacsAddon.raffledescText = [[
 This addon allows you to run raffles, randomly picking a winner.  There are three raffle modes currently supported.
     
@@ -104,7 +104,14 @@ function PacsAddon:Initialize()
 
 
     --ZO_ChatSystem_AddEventHandler(EVENT_CHAT_MESSAGE_CHANNEL, ChatMessageChannel)
-    ZO_PreHook(ZO_ChatSystem_GetEventHandlers(), EVENT_CHAT_MESSAGE_CHANNEL, ChatMessageChannel)
+
+    -- If pChat is running then we need to use it to pass our message thru otherwise we can hook the chat event directly. 
+    if pChat then
+        ZO_PreHook(pChat, "FormatMessage", ChatMessageChannel)
+    else
+        ZO_PreHook(ZO_ChatSystem_GetEventHandlers(), EVENT_CHAT_MESSAGE_CHANNEL, ChatMessageChannel)
+    end
+
 
     -- Listen for guild join events
     EVENT_MANAGER:RegisterForEvent(PacsAddon.name, EVENT_GUILD_MEMBER_ADDED, PacsAddon.guildJoin)
